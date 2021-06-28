@@ -4,20 +4,33 @@ class vec3d:
 		self.y = y
 		self.z = z
 	def __add__(self, other):
+		if isinstance(other,(int,float)):
+			return vec3d( self.x + other, self.y + other, self.z + other )
 		return vec3d(self.x+other.x,self.y+other.y,self.z+other.z)
 	def __sub__(self, other):
+		if isinstance(other,(int,float)):
+			return vec3d( self.x - other, self.y - other, self.z - other )
 		return vec3d(self.x-other.x,self.y-other.y,self.z-other.z)
 	def __iter__(self):
 		return iter([self.x,self.y,self.z])
 	def __mul__(self, other):
+		if isinstance(other,(int,float)):
+			return vec3d( self.x * other, self.y * other, self.z * other )
 		return vec3d(self.x*other.x,self.y*other.y,self.z*other.z)
 	def __imul__(self, other):
+		if isinstance(other,(int,float)):
+			return vec3d( self.x * other, self.y * other, self.z * other )
 		return vec3d(self.x*other.x,self.y*other.y,self.z*other.z)
 	def __getitem__(self, item):
 		return [self.x,self.y,self.z][item]
 	def __iadd__(self, other):
+		if isinstance(other,(int,float)):
+			return vec3d( self.x + other, self.y + other, self.z + other )
+
 		return vec3d( self.x + other.x, self.y + other.y, self.z + other.z )
 	def __isub__(self, other):
+		if isinstance(other,(int,float)):
+			return vec3d( self.x - other, self.y - other, self.z - other )
 		return vec3d( self.x - other.x, self.y - other.y, self.z - other.z )
 	def __eq__(self, other):
 		return self.x==other.x and self.y==other.y and self.z==other.z
@@ -30,6 +43,8 @@ class vec3d:
 	def __neg__(self):
 		return vec3d(-self.x,-self.y,-self.z)
 	def __truediv__(self, other):
+		if isinstance(other,(int,float)):
+			return vec3d( self.x / other, self.y / other, self.z / other )
 		return vec3d( self.x / other.x, self.y / other.y, self.z / other.z )
 	def __floordiv__(self, other):
 		return vec3d( self.x // other.x, self.y // other.y, self.z // other.z )
