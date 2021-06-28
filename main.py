@@ -1,3 +1,4 @@
+import pyglet
 window = pyglet.window.Window(resizable=True)
 
 class GolfCourse:
