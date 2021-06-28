@@ -1,4 +1,4 @@
-import pyglet
+import pyglet#hello
 
 class app : 
 	def __init__(self, window): 
