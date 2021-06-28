@@ -1,8 +1,4 @@
-import pyglet
-from pyglet.shapes import Rectangle
-
 window = pyglet.window.Window(resizable=True)
-
 
 class GolfCourse:
 
