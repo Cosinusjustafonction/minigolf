@@ -11,7 +11,7 @@ class Displacement:
 		self.speed+=self.acceleration*interval
 		self.position+=self.speed*interval
 		if self.position[2]<0:
-			self.speed[2]-=self.acceleration[2]*interval
-			self.position[2]-=self.speed[2]*interval
+			self.speed[2]=0
+			self.position[2]=0
 	def strike(self,acceleration,interval):
 		self.speed+=acceleration*interval

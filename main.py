@@ -24,7 +24,7 @@ class GolfCourse:
 	def __init__(self,hole_position,ball_position):
 		self.hole_position = vec2d(hole_position[0],hole_position[1])
 		self.ball = Ball(vec3d(ball_position[0],ball_position[1],0),5)
-		self.ball.displacement.acceleration = vec3d(0,0,-1)
+		self.ball.displacement.acceleration = vec3d(0,0,-10)
 		self.batch = pyglet.graphics.Batch()
 		self.course = pyglet.shapes.Rectangle(width=window.width, height=window.height,x=0,y=0,color=(13, 143, 26),batch=self.batch)
 		self.hole = pyglet.shapes.Circle(x=self.hole_position[0],y=self.hole_position[1],radius=0.01*max(window.height,window.width),color=(0,0,0),batch=self.batch)
