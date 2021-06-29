@@ -6,21 +6,33 @@ class Displacement:
 		self.position = position
 		self.speed = speed
 		self.acceleration = acceleration
-		self.coefficient_of_friction = 10
+		self.coefficient_of_friction = 0.97
 		self.mass = 0
 	def mov(self, interval):
 		#This is the basis of physics in this whole game, and it simply updates the speed and position depending on acceleration
 		#And it has some basic ground level collision to ensure that the object doesn't sink in the ground
+
+
 		self.speed+=self.acceleration*interval
 		self.position+=self.speed*interval
-		if self.position[2]<0:
+		if self.position[2]<=0:
 			self.speed[2]=0
 			self.position[2]=0
+		if self.position[2]<=0:
+			self.friction()
 	def strike(self,acceleration,interval):
 		#adding speed to the ball after a strike
 		self.speed+=acceleration*interval
 	def is_collision(self, bounding_box, other):
+
 		return intersect_two_rectangles(*bounding_box,*other)
+	def friction(self):
+		if abs(self.speed[0])<0.1:
+			self.speed[0]=0
+		if abs(self.speed[1])<0.1:
+			self.speed[1]=0
+		self.speed*=self.coefficient_of_friction
+
 
 
 def intersect_two_rectangles(x,y,width,height,x1,y1,width1,height1):

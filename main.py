@@ -19,10 +19,13 @@ class Ball:
 		self.original_radius  = radius
 		self.hole = False
 	def draw(self,interval,hole):
+		print(self.displacement.speed)
 		self.is_hole( hole )
+
 		self.displacement.mov(interval)
 		self.shape.position = self.displacement.position[0],self.displacement.position[1]
 		self.shape.radius = self.original_radius+self.displacement.position[2]*self.original_radius*0.3
+
 		self.shape.draw()
 	def is_grounded(self):
 		return self.displacement.position[2]<=0
@@ -101,5 +104,6 @@ def on_mouse_drag(x,y,dx,dy,button, modifiers) :
 @window.event()
 def on_mouse_release(x, y, button, modifiers):
 	golf_course.strike(x,y)
+	print(golf_course.ball.displacement.speed)
 	#here the mooving function
 pyglet.app.run()
