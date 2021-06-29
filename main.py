@@ -27,7 +27,7 @@ class GolfCourse:
 		elif self.toul < -100 : 
 			self.toul = -100
 		self.arrow= pyglet.shapes.Rectangle(width=self.toul, height=5,x=self.x,y=self.y,color=(0, 25, 77),batch=self.batch,)
-		self.arrow.rotation = (180 / math.pi) * math.atan2(self.dy, self.dx)#gets angle of the arrow 
+		self.arrow.rotation = (atan2(self.y_dist, -self.x_dist) % (2 * pi))*180/pi#gets angle of the arrow 
 		self.batch.draw()
 	def draw(self):
 		self.batch.draw()
