@@ -3,6 +3,15 @@ class vec3d:
 		self.x = x
 		self.y = y
 		self.z = z
+	def __setitem__(self, key, value):
+		if not isinstance(key,int):
+			raise KeyError
+		if key==0:
+			self.x = value
+		elif key==1:
+			self.y = value
+		elif key==2:
+			self.z = value
 	def __add__(self, other):
 		if isinstance(other,(int,float)):
 			return vec3d( self.x + other, self.y + other, self.z + other )
@@ -59,6 +68,13 @@ class vec2d:
 		return vec2d(self.x+other.x,self.y+other.y)
 	def __sub__(self, other):
 		return vec2d(self.x-other.x,self.y-other.y)
+	def __setitem__(self, key, value):
+		if not isinstance(key,int):
+			raise KeyError
+		if key==0:
+			self.x = value
+		elif key==1:
+			self.y = value
 	def __iter__(self):
 		return iter([self.x,self.y])
 	def __mul__(self, other):

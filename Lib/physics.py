@@ -10,7 +10,8 @@ class Displacement:
 	def mov(self, interval):
 		self.speed+=self.acceleration*interval
 		self.position+=self.speed*interval
-		if self.position[2]<=0:
-			self.acceleration-=vec3d(self.speed[0]*interval*self.coefficient_of_friction,self.speed[1]*interval*self.coefficient_of_friction,0)
+		if self.position[2]<0:
+			self.speed[2]-=self.acceleration[2]*interval
+			self.position[2]-=self.speed[2]*interval
 	def strike(self,acceleration,interval):
 		self.speed+=acceleration*interval
