@@ -14,21 +14,24 @@ class Ball:
 		self.displacement = Displacement(position,vec3d(0,0,0),vec3d(0,0,-10))
 		self.audio = pyglet.media.load("Assets/GolfClubSound.mp3", streaming=False)
 		self.original_radius  = radius
+		self.hole = False
 	def draw(self,interval,hole):
+		self.is_hole( hole )
 		self.displacement.mov(interval)
 		self.shape.position = self.displacement.position[0],self.displacement.position[1]
 		self.shape.radius = self.original_radius+self.displacement.position[2]*self.original_radius*0.1
 		self.shape.draw()
-		self.is_hole(hole)
+
 	def is_hole(self,hole):
-		if self.displacement.is_collision([self.shape.x, self.shape.y, self.shape.radius * 2, self.shape.radius * 2],[hole.x, hole.y, hole.radius * 2, hole.radius * 2] ):
-			label = pyglet.text.Label( 'Hole !',
-			                           font_name='Times New Roman',
-			                           font_size=36,
-			                           x=window.width // 2, y=window.height // 2,
-			                           anchor_x='center', anchor_y='center' )
-			label.draw()
+		if self.displacement.is_collision([self.shape.x, self.shape.y, self.shape.radius * 2, self.shape.radius * 2],[hole.x, hole.y, hole.radius * 2, hole.radius * 2] ) and self.displacement.position[2]<=0:
+
 			self.displacement.speed = vec3d(0,0,0)
+			self.displacement.position[0]=hole.x
+			self.displacement.position[1]=hole.y
+			self.displacement.position[2] = -10
+			self.hole = True
+			ScoreSound = pyglet.media.load( "Assets/GolfHoleSound.mp3", streaming=False )
+			ScoreSound.play()
 class GolfCourse:
 
 	def __init__(self,hole_position,ball_position):
@@ -40,6 +43,8 @@ class GolfCourse:
 		self.hole = pyglet.shapes.Circle(x=self.hole_position[0],y=self.hole_position[1],radius=0.01*max(window.height,window.width),color=(0,0,0),batch=self.batch)
 		self.radius = 0.01*max(window.height,window.width)
 		self.isdraw = False
+
+
 	def draw_rect(self, dx, dy):
 		self.x = self.ball.displacement.position[0]
 		self.y = self.ball.displacement.position[1]
@@ -59,7 +64,15 @@ class GolfCourse:
 
 	def draw(self,interval):
 		self.batch.draw()
-		self.ball.draw(interval,self.hole)
+		if not self.ball.hole:
+			self.ball.draw(interval,self.hole)
+		else:
+			label = pyglet.text.Label( 'Hole !',
+			                           font_name='Times New Roman',
+			                           font_size=36,
+			                           x=window.width // 2, y=window.height // 2,
+			                           anchor_x='center', anchor_y='center' )
+			label.draw()
 golf_course = GolfCourse((10,10),(200,150))
 pyglet.clock.schedule_interval(lambda x: x,1/60)
 @window.event()
