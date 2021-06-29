@@ -3,7 +3,10 @@ from Lib.vectors import vec3d,vec2d
 from Lib.physics import Displacement
 import math
 from math import pi,atan2
+
+
 window = pyglet.window.Window(resizable=False)
+pyglet.font.add_directory("Assets")
 
 class Ball:
 	def __init__(self,position,radius):
@@ -19,12 +22,14 @@ class Ball:
 		self.is_hole( hole )
 		self.displacement.mov(interval)
 		self.shape.position = self.displacement.position[0],self.displacement.position[1]
-		self.shape.radius = self.original_radius+self.displacement.position[2]*self.original_radius*0.1
+		self.shape.radius = self.original_radius+self.displacement.position[2]*self.original_radius*0.3
 		self.shape.draw()
-
+	def is_grounded(self):
+		return self.displacement.position[2]<=0
+	def is_stopped(self):
+		return self.displacement.speed == vec3d(0,0,0)
 	def is_hole(self,hole):
-		if self.displacement.is_collision([self.shape.x, self.shape.y, self.shape.radius * 2, self.shape.radius * 2],[hole.x, hole.y, hole.radius * 2, hole.radius * 2] ) and self.displacement.position[2]<=0:
-
+		if self.displacement.is_collision([self.shape.x-self.shape.radius, self.shape.y-self.shape.radius, self.shape.radius, self.shape.radius],[hole.x-hole.radius, hole.y-hole.radius, hole.radius, hole.radius] ) and self.displacement.position[2]<=0:
 			self.displacement.speed = vec3d(0,0,0)
 			self.displacement.position[0]=hole.x
 			self.displacement.position[1]=hole.y
@@ -44,8 +49,16 @@ class GolfCourse:
 		self.radius = 0.01*max(window.height,window.width)
 		self.isdraw = False
 
-
+	def strike(self,x,y):
+		if golf_course.ball.is_grounded() and golf_course.ball.is_stopped():
+			acceleration_vector = vec3d( (golf_course.ball.displacement.position[0] - x) * 10,
+			                             (golf_course.ball.displacement.position[1] - y) * 10, 100 )
+			golf_course.ball.displacement.strike( acceleration_vector, 1 / 10 )
+			golf_course.ball.audio.play()
+			golf_course.arrow.delete()
 	def draw_rect(self, dx, dy):
+		if not self.ball.is_grounded() or not self.ball.is_stopped():
+			return
 		self.x = self.ball.displacement.position[0]
 		self.y = self.ball.displacement.position[1]
 		self.dx = dx
@@ -59,7 +72,7 @@ class GolfCourse:
 		self.y_dist = self.dy - self.y
 		self.arrow = pyglet.shapes.Rectangle( width=self.toul, height=5, x=self.x, y=self.y+2.5, color=(0, 25, 77),
 		                                      batch=self.batch, )
-		self.arrow.rotation = (atan2( -self.y_dist, self.x_dist ) % (2 * pi)) * 180 / pi  # gets angle of the arrow
+		self.arrow.rotation = (atan2( self.y_dist, -self.x_dist ) % (2 * pi)) * 180 / pi  # gets angle of the arrow
 
 
 	def draw(self,interval):
@@ -68,10 +81,12 @@ class GolfCourse:
 			self.ball.draw(interval,self.hole)
 		else:
 			label = pyglet.text.Label( 'Hole !',
-			                           font_name='Times New Roman',
-			                           font_size=36,
-			                           x=window.width // 2, y=window.height // 2,
-			                           anchor_x='center', anchor_y='center' )
+			                           font_name="Big Shoulders Display",
+			                           font_size=50,
+			                           bold=True,
+			                           x=window.width // 2, y=window.height-window.height // 3,
+			                           anchor_x='center', anchor_y='center',
+			                           color=(217, 252, 18,255))
 			label.draw()
 golf_course = GolfCourse((10,10),(200,150))
 pyglet.clock.schedule_interval(lambda x: x,1/60)
@@ -85,9 +100,6 @@ def on_mouse_drag(x,y,dx,dy,button, modifiers) :
 	golf_course.draw_rect(main_pos[0],main_pos[1])
 @window.event()
 def on_mouse_release(x, y, button, modifiers):
-	acceleration_vector = vec3d((golf_course.ball.displacement.position[0]-x)*10,(golf_course.ball.displacement.position[1]-y)*10,100)
-	golf_course.ball.displacement.strike(acceleration_vector,1/10)
-	golf_course.ball.audio.play()
-	golf_course.arrow.delete()
+	golf_course.strike(x,y)
 	#here the mooving function
 pyglet.app.run()
