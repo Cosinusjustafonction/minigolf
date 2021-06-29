@@ -11,8 +11,6 @@ class Displacement:
 	def mov(self, interval):
 		#This is the basis of physics in this whole game, and it simply updates the speed and position depending on acceleration
 		#And it has some basic ground level collision to ensure that the object doesn't sink in the ground
-
-
 		self.speed+=self.acceleration*interval
 		self.position+=self.speed*interval
 		if self.position[2]<=0:

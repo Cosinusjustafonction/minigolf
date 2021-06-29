@@ -5,7 +5,7 @@ import math
 from math import pi,atan2
 
 
-window = pyglet.window.Window(resizable=False)
+window = pyglet.window.Window(resizable=False,height=480,width=960)
 pyglet.font.add_directory("Assets")
 
 class Ball:
@@ -16,10 +16,9 @@ class Ball:
 		print(self.shape.position)
 		self.displacement = Displacement(position,vec3d(0,0,0),vec3d(0,0,-10))
 		self.audio = pyglet.media.load("Assets/GolfClubSound.mp3", streaming=False)
-		self.original_radius  = radius
+		self.original_radius = radius
 		self.hole = False
 	def draw(self,interval,hole):
-		print(self.displacement.speed)
 		self.is_hole( hole )
 
 		self.displacement.mov(interval)
@@ -47,7 +46,10 @@ class GolfCourse:
 		self.ball = Ball(vec3d(ball_position[0],ball_position[1],0),5)
 		self.ball.displacement.acceleration = vec3d(0,0,-10)
 		self.batch = pyglet.graphics.Batch()
-		self.course = pyglet.shapes.Rectangle(width=window.width, height=window.height,x=0,y=0,color=(13, 143, 26),batch=self.batch)
+		course_image = pyglet.image.load("Assets/GolfCourseTexture.png")
+		self.golf_sprite = pyglet.sprite.Sprite(course_image,0,0,batch=self.batch)
+		self.golf_sprite.scale = max(window.width,window.height)/min(self.golf_sprite.height,self.golf_sprite.width)
+		#self.course = pyglet.shapes.Rectangle(width=window.width, height=window.height,x=0,y=0,color=(13, 143, 26),batch=self.batch)
 		self.hole = pyglet.shapes.Circle(x=self.hole_position[0],y=self.hole_position[1],radius=0.01*max(window.height,window.width),color=(0,0,0),batch=self.batch)
 		self.radius = 0.01*max(window.height,window.width)
 		self.isdraw = False
@@ -104,6 +106,5 @@ def on_mouse_drag(x,y,dx,dy,button, modifiers) :
 @window.event()
 def on_mouse_release(x, y, button, modifiers):
 	golf_course.strike(x,y)
-	print(golf_course.ball.displacement.speed)
 	#here the mooving function
 pyglet.app.run()
