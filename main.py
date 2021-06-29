@@ -1,6 +1,6 @@
 import pyglet
-from minigolf.Lib.vectors import vec3d,vec2d
-from minigolf.Lib.physics import Displacement
+from Lib.vectors import vec3d,vec2d
+from Lib.physics import Displacement
 import math
 from math import pi,atan2
 window = pyglet.window.Window(resizable=False)
@@ -14,11 +14,21 @@ class Ball:
 		self.displacement = Displacement(position,vec3d(0,0,0),vec3d(0,0,-10))
 		self.audio = pyglet.media.load("Assets/GolfClubSound.mp3", streaming=False)
 		self.original_radius  = radius
-	def draw(self,interval):
+	def draw(self,interval,hole):
 		self.displacement.mov(interval)
 		self.shape.position = self.displacement.position[0],self.displacement.position[1]
 		self.shape.radius = self.original_radius+self.displacement.position[2]*self.original_radius*0.1
 		self.shape.draw()
+		self.is_hole(hole)
+	def is_hole(self,hole):
+		if self.displacement.is_collision([self.shape.x, self.shape.y, self.shape.radius * 2, self.shape.radius * 2],[hole.x, hole.y, hole.radius * 2, hole.radius * 2] ):
+			label = pyglet.text.Label( 'Hole !',
+			                           font_name='Times New Roman',
+			                           font_size=36,
+			                           x=window.width // 2, y=window.height // 2,
+			                           anchor_x='center', anchor_y='center' )
+			label.draw()
+			self.displacement.speed = vec3d(0,0,0)
 class GolfCourse:
 
 	def __init__(self,hole_position,ball_position):
@@ -49,8 +59,7 @@ class GolfCourse:
 
 	def draw(self,interval):
 		self.batch.draw()
-		self.ball.draw(interval)
-		print(self.ball.displacement.position)
+		self.ball.draw(interval,self.hole)
 golf_course = GolfCourse((10,10),(200,150))
 pyglet.clock.schedule_interval(lambda x: x,1/60)
 @window.event()
