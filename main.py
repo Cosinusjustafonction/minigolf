@@ -21,7 +21,7 @@ class GolfCourse:
 		self.y = self.ball_position[1]
 		self.dx = dx
 		self.dy = dy
-		self.toul = (150+200)-(dx+dy)
+		self.toul = math.sqrt((self.dx-200)**2+(self.dy-150)**2)
 		if self.toul > 100 :
 			self.toul = 100
 		elif self.toul < -100 : 
