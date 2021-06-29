@@ -44,6 +44,7 @@ class GolfCourse:
 		self.arrow.rotation = (atan2( self.y_dist, -self.x_dist ) % (2 * pi)) * 180 / pi  # gets angle of the arrow
 		self.batch.draw()
 
+
 	def draw(self,interval):
 		self.batch.draw()
 		self.ball.draw(interval)
