@@ -45,12 +45,12 @@ class GolfCourse:
 		self.hole_position = vec2d(hole_position[0],hole_position[1])
 		self.ball = Ball(vec3d(ball_position[0],ball_position[1],0),5)
 		self.ball.displacement.acceleration = vec3d(0,0,-10)
+		self.background = pyglet.graphics.Batch()
 		self.batch = pyglet.graphics.Batch()
 		course_image = pyglet.image.load("Assets/GolfCourseTexture.png")
-		self.golf_sprite = pyglet.sprite.Sprite(course_image,0,0,batch=self.batch)
+		self.golf_sprite = pyglet.sprite.Sprite(course_image,0,0,batch=self.background)
 		self.golf_sprite.scale = max(window.width,window.height)/min(self.golf_sprite.height,self.golf_sprite.width)
-		#self.course = pyglet.shapes.Rectangle(width=window.width, height=window.height,x=0,y=0,color=(13, 143, 26),batch=self.batch)
-		self.hole = pyglet.shapes.Circle(x=self.hole_position[0],y=self.hole_position[1],radius=0.01*max(window.height,window.width),color=(0,0,0),batch=self.batch)
+		self.hole = pyglet.shapes.Circle(x=self.hole_position[0],y=self.hole_position[1],radius=10,color=(0,0,0),batch=self.batch)
 		self.radius = 0.01*max(window.height,window.width)
 		self.isdraw = False
 
@@ -81,6 +81,7 @@ class GolfCourse:
 
 
 	def draw(self,interval):
+		self.background.draw()
 		self.batch.draw()
 		if not self.ball.hole:
 			self.ball.draw(interval,self.hole)
