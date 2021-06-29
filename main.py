@@ -1,6 +1,7 @@
 import pyglet
 import numpy as np 
 import math 
+from math import pi,atan2
 window = pyglet.window.Window(resizable=True)
 
 class GolfCourse:
