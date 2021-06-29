@@ -11,18 +11,20 @@ class Ball:
 		self.shape = self.ball = pyglet.shapes.Circle( x=position[0], y=position[1],
 		                                  radius=radius , color=(255, 255, 255))
 		print(self.shape.position)
-		self.displacement = Displacement(position,vec3d(0,0,0),vec3d(0,0,-100))
+		self.displacement = Displacement(position,vec3d(0,0,0),vec3d(0,0,-10))
 		self.audio = pyglet.media.load("Assets/GolfClubSound.mp3", streaming=False)
+		self.original_radius  = radius
 	def draw(self,interval):
 		self.displacement.mov(interval)
 		self.shape.position = self.displacement.position[0],self.displacement.position[1]
+		self.shape.radius = self.original_radius+self.displacement.position[2]*self.original_radius*0.1
 		self.shape.draw()
 class GolfCourse:
 
 	def __init__(self,hole_position,ball_position):
 		self.hole_position = vec2d(hole_position[0],hole_position[1])
 		self.ball = Ball(vec3d(ball_position[0],ball_position[1],0),5)
-		self.ball.displacement.acceleration = vec3d(0,0,-100)
+		self.ball.displacement.acceleration = vec3d(0,0,-1)
 		self.batch = pyglet.graphics.Batch()
 		self.course = pyglet.shapes.Rectangle(width=window.width, height=window.height,x=0,y=0,color=(13, 143, 26),batch=self.batch)
 		self.hole = pyglet.shapes.Circle(x=self.hole_position[0],y=self.hole_position[1],radius=0.01*max(window.height,window.width),color=(0,0,0),batch=self.batch)
@@ -61,7 +63,7 @@ def on_mouse_drag(x,y,dx,dy,button, modifiers) :
 	golf_course.draw_rect(main_pos[0],main_pos[1])
 @window.event()
 def on_mouse_release(x, y, button, modifiers):
-	acceleration_vector = vec3d((golf_course.ball.displacement.position[0]-x)*10,(golf_course.ball.displacement.position[1]-y)*10,10)
+	acceleration_vector = vec3d((golf_course.ball.displacement.position[0]-x)*10,(golf_course.ball.displacement.position[1]-y)*10,100)
 	golf_course.ball.displacement.strike(acceleration_vector,1/10)
 	golf_course.ball.audio.play()
 	golf_course.arrow.delete()
