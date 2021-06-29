@@ -1,7 +1,7 @@
 import pyglet
 import numpy as np 
 import math 
-from math import pi,atan2
+from math import pi, atan2
 window = pyglet.window.Window(resizable=True)
 
 class GolfCourse:
@@ -27,8 +27,10 @@ class GolfCourse:
 			self.toul = 100
 		elif self.toul < -100 : 
 			self.toul = -100
+		self.x_dist = self.dx - self.x
+		self.y_dist = self.dy - self.y
 		self.arrow= pyglet.shapes.Rectangle(width=self.toul, height=5,x=self.x,y=self.y,color=(0, 25, 77),batch=self.batch,)
-		self.arrow.rotation = (atan2(self.y_dist, -self.x_dist) % (2 * pi))*180/pi#gets angle of the arrow 
+		self.arrow.rotation = (atan2(self.y_dist, -self.x_dist) % (2 * pi))*180/pi #gets angle of the arrow 
 		self.batch.draw()
 	def draw(self):
 		self.batch.draw()
