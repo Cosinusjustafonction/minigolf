@@ -26,12 +26,13 @@ class Ball:
 		self.shape.radius = self.original_radius+self.displacement.position[2]*self.original_radius*0.3
 
 		self.shape.draw()
+
 	def is_grounded(self):
 		return self.displacement.position[2]<=0
 	def is_stopped(self):
 		return self.displacement.speed == vec3d(0,0,0)
 	def is_hole(self,hole):
-		if self.displacement.is_collision([self.shape.x-self.shape.radius, self.shape.y-self.shape.radius, self.shape.radius*2, self.shape.radius*2],[hole.x-hole.radius, hole.y-hole.radius, hole.radius*2, hole.radius*2] ) and self.displacement.position[2]<=0:
+		if self.displacement.is_collision([self.shape.x-self.shape.radius, self.shape.y-self.shape.radius, self.shape.radius, self.shape.radius],[hole.x-hole.radius, hole.y-hole.radius, hole.radius, hole.radius] ) and self.displacement.position[2]<=0:
 			self.displacement.speed = vec3d(0,0,0)
 			self.displacement.position[0]=hole.x
 			self.displacement.position[1]=hole.y
@@ -54,13 +55,13 @@ class GolfCourse:
 		self.radius = 0.01*max(window.height,window.width)
 		self.isdraw = False
 
-	def strike(self,x,y):
-		if golf_course.ball.is_grounded() and golf_course.ball.is_stopped():
-			acceleration_vector = vec3d( (golf_course.ball.displacement.position[0] - x) * 10,
-			                             (golf_course.ball.displacement.position[1] - y) * 10, 100 )
-			golf_course.ball.displacement.strike( acceleration_vector, 1 / 10 )
-			golf_course.ball.audio.play()
-			golf_course.arrow.delete()
+	def strike(self):
+		if self.ball.is_grounded() and self.ball.is_stopped():
+			acceleration_vector = vec3d( -(self.x_dist) * 10,
+			                             -(self.y_dist) * 10, 100 )
+			self.ball.displacement.strike( acceleration_vector, 1 / 10 )
+			self.ball.audio.play()
+			self.arrow.delete()
 	def draw_rect(self, dx, dy):
 		if not self.ball.is_grounded() or not self.ball.is_stopped():
 			return
@@ -81,6 +82,7 @@ class GolfCourse:
 			self.y_dist*=factor
 		self.arrow = pyglet.shapes.Line(x=self.ball.displacement.position[0],y=self.ball.displacement.position[1],x2=self.ball.displacement.position[0]-self.x_dist,y2=self.ball.displacement.position[1]-self.y_dist, width=4,  color=(0, 25, 77),
 		                                      batch=self.batch )
+		self.arrow.opacity = 150
 		self.arrow.rotation = (atan2( self.y_dist, -self.x_dist ) % (2 * pi)) * 180 / pi  # gets angle of the arrow
 
 
@@ -110,6 +112,6 @@ def on_mouse_drag(x,y,dx,dy,button, modifiers) :
 	golf_course.draw_rect(main_pos[0],main_pos[1])
 @window.event()
 def on_mouse_release(x, y, button, modifiers):
-	golf_course.strike(x,y)
+	golf_course.strike()
 	#here the mooving function
 pyglet.app.run()
