@@ -37,14 +37,17 @@ class Ball:
 			self.hole = True
 			ScoreSound = pyglet.media.load( "Assets/GolfHoleSound.mp3", streaming=False )
 			ScoreSound.play()
+	#def boundaries_boundaries(self,x,y,width,height) : 
 	def boundaries_col(self) : 
-		if  self.displacement.is_col(10,480,self.shape.position[0],self.shape.position[1],self.shape.radius,"left")==True: 
-			print("heu")
-		if  self.displacement.is_col(950,480,self.shape.position[0],self.shape.position[1],self.shape.radius,"right")==True: 
-			print("heu")
-		if  self.displacement.is_col(480,10,self.shape.position[0],self.shape.position[1],self.shape.radius,"left")==True: 
-			print("heu")
-		
+		for i in golf_course.obstacles :
+			print(i[2], i[3], i[0], i[1])
+			if self.displacement.is_collision([self.shape.x-self.shape.radius, self.shape.y-self.shape.radius, self.shape.radius, self.shape.radius],[i[2], i[3], i[1], i[0]] ):
+				self.rebound()
+				continue 
+	def rebound(self) : 
+		acceleration_vector = vec3d( (golf_course.x_dist)+(30) * 10,
+			                          (golf_course.y_dist)+(30) * 10, 0 )
+		golf_course.ball.displacement.strike( acceleration_vector, 1 / 10 )
 class GolfCourse:
 
 	def __init__(self,hole_position,ball_position):
@@ -59,6 +62,8 @@ class GolfCourse:
 		self.hole = pyglet.shapes.Circle(x=self.hole_position[0],y=self.hole_position[1],radius=10,color=(0,0,0),batch=self.batch)
 		self.radius = 0.01*max(window.height,window.width)
 		self.isdraw = False
+		self.obstacles = []
+		self.all_obstacles()
 
 	def strike(self):
 		if self.ball.is_grounded() and self.ball.is_stopped():
@@ -67,6 +72,7 @@ class GolfCourse:
 			self.ball.displacement.strike( acceleration_vector, 1 / 10 )
 			self.ball.audio.play()
 			self.arrow.delete()
+
 	def draw_rect(self, dx, dy):
 		if not self.ball.is_grounded() or not self.ball.is_stopped():
 			return
@@ -93,7 +99,8 @@ class GolfCourse:
 
 	def draw(self,interval):
 		self.background.draw()
-		self.draw_bareer()
+		for i in self.obstacles : 
+			self.init_obstacles(i[1],i[0],i[2],i[3],i[4]).draw()
 		self.batch.draw()
 		if not self.ball.hole:
 			self.ball.draw(interval,self.hole)
@@ -106,16 +113,17 @@ class GolfCourse:
 			                           anchor_x='center', anchor_y='center',
 			                           color=(217, 252, 18,255))
 			label.draw()
-
-	def draw_bareer(self) :
-		self.bareer1 = pyglet.shapes.Rectangle(width=10,height=480,x=0,y=0, color=(119, 52, 0),
-		                                      batch=self.batch )
-		self.bareer2= pyglet.shapes.Rectangle(width=960,height=10,x=0,y=470, color=(119, 52, 0),
-		                                      batch=self.batch )
-		self.bareer3 = pyglet.shapes.Rectangle(width=10,height=480,x=950,y=0, color=(119, 52, 0),
-		                                      batch=self.batch )
-		self.bareer4= pyglet.shapes.Rectangle(width=960,height=10,x=0,y=0, color=(119, 52, 0),
-		                                      batch=self.batch )
+	def all_obstacles(self) : 
+		self.get_bareer(480,10,0,0,(119, 52, 0))
+		self.get_bareer(10,960,0,470,(119, 52, 0))
+		self.get_bareer(480,10,950,0,(119, 52, 0))
+		self.get_bareer(10,960,0,0,(119, 52, 0))
+	def get_bareer(self,height,width,x,y,color) :
+		self.obstacles.append((height, width, x, y, color))
+	def init_obstacles(self,width,height,x,y,color) : 
+		
+		return pyglet.shapes.Rectangle(width=width,height=height,x=x,y=y, color=color,
+                                              batch=self.batch )
 
 golf_course = GolfCourse((10,10),(200,150))
 pyglet.clock.schedule_interval(lambda x: x,1/60)
@@ -134,4 +142,4 @@ def on_mouse_release(x, y, button, modifiers):
 @window.event()
 def on_mouse_press(x, y, button, modifiers):
 	print(x,y)
-pyglet.app.run()
+pyglet.app.run() 

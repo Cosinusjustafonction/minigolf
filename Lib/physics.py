@@ -30,36 +30,6 @@ class Displacement:
 		if abs(self.speed[1])<0.1:
 			self.speed[1]=0
 		self.speed*=self.coefficient_of_friction
-	def get_list(self,height , width):
-		big = []
-		if height > width : 
-		    for i in range(height) : 
-		        big.append((i, width))
-		else  :
-		    for i in range(width) : 
-		        big.append((i, height))
-		return big 
-	def get_list2(self,height , width) :	 
-		big = []
-		if height < width : 
-			for i in  range(height) : 
-				big.append((width,i ))
-		else : 
-			for i in range(width):
-				big.append((height, i))
-
-		return big 
-	def is_col(self,height,width,x,y,radius,pos) :
-		main_list = []
-		if pos == "left" : 
-			main_list = self.get_list(height,width)
-		else : 
-			main_list = self.get_list2(height,width)
-		for i in main_list : 
-			if ((i[0]-x)**2 +(i[1]-y)**2)<radius**2 : 
-				return True
-
-
 
 def intersect_two_rectangles(x,y,width,height,x1,y1,width1,height1):
 	overlap1 = intersect_two_intervals([x,x+width],[x1,x1+width1])
