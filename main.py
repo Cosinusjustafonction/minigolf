@@ -42,7 +42,9 @@ class Ball:
 			print("heu")
 		if  self.displacement.is_col(950,480,self.shape.position[0],self.shape.position[1],self.shape.radius,"right")==True: 
 			print("heu")
-		if  self.displacement.is_col(480,10,self.shape.position[0],self.shape.position[1],self.shape.radius,"left")==True: 
+		if  self.displacement.is_col(480,10,self.shape.position[0],self.shape.position[1],self.shape.radius,"bottom")==True: 
+			print("heu")
+		if self.displacement.is_col(950,480,self.shape.position[0],self.shape.position[1],self.shape.radius,"left")==True:
 			print("heu")
 		
 class GolfCourse:
