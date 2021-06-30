@@ -30,62 +30,7 @@ class Displacement:
 		if abs(self.speed[1])<0.1:
 			self.speed[1]=0
 		self.speed*=self.coefficient_of_friction
-	def get_list(self,height , width):
-		big = []
-		if height > width : 
-		    for i in range(height) : 
-		        big.append((i, width))
-		else  :
-		    for i in range(width) : 
-		        big.append((i, height))
-		return big 
-	def get_list2(self,height , width) :	 
-		big = []
-		if height < width : 
-			for i in  range(height) : 
-				big.append((width,i ))
-		else : 
-			for i in range(width):
-				big.append((height, i))
 
-		return big 
-	def get_list3(self,height, width) : 
-		big = []
-		if height < width : 
-			for i in  range(height) : 
-				big.append(reverse_tuple((width,i )))
-		else : 
-			for i in range(width):
-				big.append(reverse_tuple((height, i)))
-
-		return big 
-	def get_list4(self,height,width) : 
-		big = []
-		if height > width : 
-		    for i in range(height) : 
-		        big.append(reverse_tuple((i, width)))
-		else  :
-		    for i in range(width) : 
-		        big.append(reverse_tuple((i, height)))
-		return big 
-	def is_col(self,height,width,x,y,radius,pos) :
-		main_list = []
-		if pos == "left" : 
-			main_list = self.get_list(height,width)
-		elif pos == "right" : 
-			main_list = self.get_list2(height,width)
-		elif pos == "up" : 
-			main_list = self.get_list3(height,width)
-		elif pos== "bottom" : 
-			main_list = self.get_list4(height,width) 
-		for i in main_list : 
-			if ((i[0]-x)**2 +(i[1]-y)**2)<radius**2 : 
-				return True
-
-
-def reverse_tuple(tupile) : 
-	tuplet = tupile[::-1]
-	return tuplet 
 def intersect_two_rectangles(x,y,width,height,x1,y1,width1,height1):
 	overlap1 = intersect_two_intervals([x,x+width],[x1,x1+width1])
 	overlap2 = intersect_two_intervals( [y, y + height], [y1, y1 + height1] )
