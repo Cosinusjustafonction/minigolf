@@ -31,7 +31,7 @@ class Ball:
 	def is_stopped(self):
 		return self.displacement.speed == vec3d(0,0,0)
 	def is_hole(self,hole):
-		if self.displacement.is_collision([self.shape.x-self.shape.radius, self.shape.y-self.shape.radius, self.shape.radius, self.shape.radius],[hole.x-hole.radius, hole.y-hole.radius, hole.radius, hole.radius] ) and self.displacement.position[2]<=0:
+		if self.displacement.is_collision([self.shape.x-self.shape.radius, self.shape.y-self.shape.radius, self.shape.radius*2, self.shape.radius*2],[hole.x-hole.radius, hole.y-hole.radius, hole.radius*2, hole.radius*2] ) and self.displacement.position[2]<=0:
 			self.displacement.speed = vec3d(0,0,0)
 			self.displacement.position[0]=hole.x
 			self.displacement.position[1]=hole.y
@@ -75,8 +75,8 @@ class GolfCourse:
 			self.toul = -100
 		self.x_dist = self.dx - self.x
 		self.y_dist = self.dy - self.y
-		self.arrow = pyglet.shapes.Rectangle( width=self.toul, height=5, x=self.x, y=self.y+2.5, color=(0, 25, 77),
-		                                      batch=self.batch, )
+		self.arrow = pyglet.shapes.Line(x=self.ball.displacement.position[0],y=self.ball.displacement.position[1],x2=self.ball.displacement.position[0]-self.x_dist,y2=self.ball.displacement.position[1]-self.y_dist, width=4,  color=(0, 25, 77),
+		                                      batch=self.batch )
 		self.arrow.rotation = (atan2( self.y_dist, -self.x_dist ) % (2 * pi)) * 180 / pi  # gets angle of the arrow
 
 
