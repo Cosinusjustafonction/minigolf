@@ -1,3 +1,5 @@
+import math
+
 class vec3d:
 	def __init__(self,x,y,z):
 		self.x = x
@@ -64,6 +66,15 @@ class vec2d:
 	def __init__(self,x,y):
 		self.x = x
 		self.y = y
+	def angle(self,other):
+		return math.acos((self.dot_product(other))/(self.magnitude()*other.magnitude()))
+	def magnitude(self):
+		return math.sqrt((self.x**2)+(self.y**2))
+	def dot_product(self,other):
+		return (self.x*other.x)+(self.y*other.y)
+	def rotate(self,angle):
+		self.x,self.y = math.cos(angle)*self.x-math.sin(angle)*self.y,math.sin(angle)*self.x+math.cos(angle)*self.y
+		return self.__iter__()
 	def __add__(self, other):
 		return vec2d(self.x+other.x,self.y+other.y)
 	def __sub__(self, other):

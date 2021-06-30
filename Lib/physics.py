@@ -31,6 +31,18 @@ class Displacement:
 			self.speed[1]=0
 		self.speed*=self.coefficient_of_friction
 
+def get_line_equation_from_points(p1,p2):
+	return [(p1[1]-p2[1])/(p1[0]-p2[0]),p1[1]-((p1[1]-p2[1])/(p1[0]-p2[0])*p1[0])]
+def get_normal_from_two_points(p1,p2):
+	return 1,-1/get_line_equation_from_points(p1,p2)[0]
+def intersect_two_lines_from_points(verts1,verts2):
+	eq1 = get_line_equation_from_points(*verts1)
+	eq2 = get_line_equation_from_points(*verts2)
+	print(eq1,eq2)
+	if eq1[0]==eq2[0]:
+		return None
+	else:
+		return ((eq1[1]-eq2[1])/(eq2[0]-eq1[0]),(eq1[0]*(eq1[1]-eq2[1])/(eq2[0]-eq1[0]))+eq1[1])
 def intersect_two_rectangles(x,y,width,height,x1,y1,width1,height1):
 	overlap1 = intersect_two_intervals([x,x+width],[x1,x1+width1])
 	overlap2 = intersect_two_intervals( [y, y + height], [y1, y1 + height1] )
@@ -41,3 +53,5 @@ def intersect_two_intervals(inter1,inter2):
 		return [sorted_values[1][0],sorted_values[0][1]]
 	else:
 		return None
+def get_verts_from_properties(x,y,width,height):
+	return [(x,y),(x+width,y),(x+width,y+height),(x,y+height)]

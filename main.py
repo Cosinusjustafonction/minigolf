@@ -1,12 +1,12 @@
 import pyglet
 from Lib.vectors import vec3d,vec2d
-from Lib.physics import Displacement
+from Lib.physics import *
 import math
 from math import pi,atan2
 
 
 window = pyglet.window.Window(resizable=False,height=480,width=960)
-#pyglet.font.add_directory("Assets")
+pyglet.font.add_directory("Assets")
 
 class Ball:
 	def __init__(self,position,radius):
@@ -40,11 +40,14 @@ class Ball:
 	#def boundaries_boundaries(self,x,y,width,height) : 
 	def boundaries_col(self) : 
 		for i in golf_course.obstacles :
-			print(i[2], i[3], i[0], i[1])
+			print(i)
 			if self.displacement.is_collision([self.shape.x-self.shape.radius, self.shape.y-self.shape.radius, self.shape.radius, self.shape.radius],[i[2], i[3], i[1], i[0]] ):
+				verts = get_verts_from_properties(*i[0:4])
+				for i in range(4):
+					intersection = intersect_two_lines_from_points(((self.displacement.position[0],self.displacement.position[1]),(0,)))
 				self.rebound()
 				continue 
-	def rebound(self) : 
+	def rebound(self,normal) :
 		acceleration_vector = vec3d( (golf_course.x_dist)+(30) * 10,
 			                          (golf_course.y_dist)+(30) * 10, 0 )
 		golf_course.ball.displacement.strike( acceleration_vector, 1 / 10 )
@@ -125,7 +128,7 @@ class GolfCourse:
 		return pyglet.shapes.Rectangle(width=width,height=height,x=x,y=y, color=color,
                                               batch=self.batch )
 
-golf_course = GolfCourse((10,10),(200,150))
+golf_course = GolfCourse((50,60),(200,150))
 pyglet.clock.schedule_interval(lambda x: x,1/60)
 @window.event()
 def on_draw():
