@@ -6,14 +6,12 @@ from math import pi,atan2
 
 
 window = pyglet.window.Window(resizable=False,height=480,width=960)
-pyglet.font.add_directory("Assets")
+#pyglet.font.add_directory("Assets")
 
 class Ball:
 	def __init__(self,position,radius):
-		print(position)
 		self.shape = self.ball = pyglet.shapes.Circle( x=position[0], y=position[1],
 		                                  radius=radius , color=(255, 255, 255))
-		print(self.shape.position)
 		self.displacement = Displacement(position,vec3d(0,0,0),vec3d(0,0,-10))
 		self.audio = pyglet.media.load("Assets/GolfClubSound.mp3", streaming=False)
 		self.original_radius = radius
@@ -24,9 +22,8 @@ class Ball:
 		self.displacement.mov(interval)
 		self.shape.position = self.displacement.position[0],self.displacement.position[1]
 		self.shape.radius = self.original_radius+self.displacement.position[2]*self.original_radius*0.3
-
 		self.shape.draw()
-
+		self.boundaries_col()
 	def is_grounded(self):
 		return self.displacement.position[2]<=0
 	def is_stopped(self):
@@ -40,6 +37,14 @@ class Ball:
 			self.hole = True
 			ScoreSound = pyglet.media.load( "Assets/GolfHoleSound.mp3", streaming=False )
 			ScoreSound.play()
+	def boundaries_col(self) : 
+		if  self.displacement.is_col(10,480,self.shape.position[0],self.shape.position[1],self.shape.radius,"left")==True: 
+			print("heu")
+		if  self.displacement.is_col(950,480,self.shape.position[0],self.shape.position[1],self.shape.radius,"right")==True: 
+			print("heu")
+		if  self.displacement.is_col(480,10,self.shape.position[0],self.shape.position[1],self.shape.radius,"left")==True: 
+			print("heu")
+		
 class GolfCourse:
 
 	def __init__(self,hole_position,ball_position):
@@ -88,6 +93,7 @@ class GolfCourse:
 
 	def draw(self,interval):
 		self.background.draw()
+		self.draw_bareer()
 		self.batch.draw()
 		if not self.ball.hole:
 			self.ball.draw(interval,self.hole)
@@ -100,6 +106,17 @@ class GolfCourse:
 			                           anchor_x='center', anchor_y='center',
 			                           color=(217, 252, 18,255))
 			label.draw()
+
+	def draw_bareer(self) :
+		self.bareer1 = pyglet.shapes.Rectangle(width=10,height=480,x=0,y=0, color=(119, 52, 0),
+		                                      batch=self.batch )
+		self.bareer2= pyglet.shapes.Rectangle(width=960,height=10,x=0,y=470, color=(119, 52, 0),
+		                                      batch=self.batch )
+		self.bareer3 = pyglet.shapes.Rectangle(width=10,height=480,x=950,y=0, color=(119, 52, 0),
+		                                      batch=self.batch )
+		self.bareer4= pyglet.shapes.Rectangle(width=960,height=10,x=0,y=0, color=(119, 52, 0),
+		                                      batch=self.batch )
+
 golf_course = GolfCourse((10,10),(200,150))
 pyglet.clock.schedule_interval(lambda x: x,1/60)
 @window.event()
@@ -114,4 +131,7 @@ def on_mouse_drag(x,y,dx,dy,button, modifiers) :
 def on_mouse_release(x, y, button, modifiers):
 	golf_course.strike()
 	#here the mooving function
+@window.event()
+def on_mouse_press(x, y, button, modifiers):
+	print(x,y)
 pyglet.app.run()
