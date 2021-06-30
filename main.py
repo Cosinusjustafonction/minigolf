@@ -75,6 +75,10 @@ class GolfCourse:
 			self.toul = -100
 		self.x_dist = self.dx - self.x
 		self.y_dist = self.dy - self.y
+		if self.x_dist**2+self.y_dist**2>100**2:
+			factor = 100/math.sqrt(self.x_dist**2+self.y_dist**2)
+			self.x_dist*=factor
+			self.y_dist*=factor
 		self.arrow = pyglet.shapes.Line(x=self.ball.displacement.position[0],y=self.ball.displacement.position[1],x2=self.ball.displacement.position[0]-self.x_dist,y2=self.ball.displacement.position[1]-self.y_dist, width=4,  color=(0, 25, 77),
 		                                      batch=self.batch )
 		self.arrow.rotation = (atan2( self.y_dist, -self.x_dist ) % (2 * pi)) * 180 / pi  # gets angle of the arrow
