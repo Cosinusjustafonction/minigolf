@@ -38,14 +38,21 @@ class Ball:
 			ScoreSound = pyglet.media.load( "Assets/GolfHoleSound.mp3", streaming=False )
 			ScoreSound.play()
 	#def boundaries_boundaries(self,x,y,width,height) : 
-	def boundaries_col(self) : 
+	def boundaries_col(self) :
 		for i in golf_course.obstacles :
-			print(i)
 			if self.displacement.is_collision([self.shape.x-self.shape.radius, self.shape.y-self.shape.radius, self.shape.radius, self.shape.radius],[i[2], i[3], i[1], i[0]] ):
 				verts = get_verts_from_properties(*i[0:4])
+				intersections = []
 				for i in range(4):
-					intersection = intersect_two_lines_from_points(((self.displacement.position[0],self.displacement.position[1]),(0,)))
+					intersection = intersect_two_lines_from_points(((self.displacement.position[0],self.displacement.position[1]),(self.displacement.position[0]+self.displacement.speed[0],self.displacement.position[1]+self.displacement.speed[1])),(verts[i%4],verts[(i+1)%4]))
+					distance = math.sqrt(((self.displacement.position[0]-intersection[0])**2)+(self.displacement.position[1]-intersection[1])**2)
+					intersections.append([i,intersection,distance])
+				intersections = sorted(intersections,key=lambda x: x[2])
+				i = intersections[0][0]
+				intersected_edge = (verts[i%4],verts[(i+1)%4])
+				print(intersected_edge)
 				self.rebound()
+
 				continue 
 	def rebound(self,normal) :
 		acceleration_vector = vec3d( (golf_course.x_dist)+(30) * 10,
