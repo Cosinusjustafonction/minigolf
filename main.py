@@ -66,7 +66,6 @@ class Ball:
 		speed_2d.rotate(2*speed_2d.angle(normal))
 		speed_2d*=-1
 		self.displacement.speed[0],self.displacement.speed[1]=speed_2d[0],speed_2d[1]
-		self.displacement.speed[2]=-self.displacement.speed[-1]
 class GolfCourse:
 
 	def __init__(self,hole_position,ball_position):
