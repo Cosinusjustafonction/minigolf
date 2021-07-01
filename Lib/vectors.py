@@ -91,6 +91,8 @@ class vec2d:
 	def __mul__(self, other):
 		return vec2d( self.x * other.x, self.y * other.y )
 	def __imul__(self, other):
+		if isinstance(other,(int,float)):
+			return vec2d( self.x * other, self.y * other )
 		return vec2d( self.x * other.x, self.y * other.y )
 	def __getitem__(self, item):
 		return [self.x,self.y][item]

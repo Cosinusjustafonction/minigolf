@@ -33,19 +33,14 @@ class Displacement:
 
 def get_line_equation_from_points(p1,p2):
 	if p1[0]==p2[0]:
-		return p1[0]
+		p1 = (p1[0]+0.01,p1[1])
 	return [(p1[1]-p2[1])/(p1[0]-p2[0]),p1[1]-((p1[1]-p2[1])/(p1[0]-p2[0])*p1[0])]
 def get_normal_from_two_points(p1,p2):
 	return 1,-1/get_line_equation_from_points(p1,p2)[0]
 def intersect_two_lines_from_points(verts1,verts2):
 	eq1 = get_line_equation_from_points(*verts1)
 	eq2 = get_line_equation_from_points(*verts2)
-	if isinstance(eq1,(int,float)) and isinstance(eq2,(int,float)):
-		return None
-	elif isinstance(eq1,(int,float)):
-		return (eq1,eq2[0]*eq1+eq2[1])
-	elif isinstance(eq2,(int,float)):
-		return (eq2,eq1[0]*eq2+eq1[1])
+
 	if eq1[0]==eq2[0]:
 		return None
 	else:
@@ -60,5 +55,5 @@ def intersect_two_intervals(inter1,inter2):
 		return [sorted_values[1][0],sorted_values[0][1]]
 	else:
 		return None
-def get_verts_from_properties(width,height,x,y):
+def get_verts_from_properties(height,width,x,y):
 	return [(x,y),(x+width,y),(x+width,y+height),(x,y+height)]

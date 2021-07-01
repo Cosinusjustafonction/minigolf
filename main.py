@@ -16,18 +16,22 @@ class Ball:
 		self.audio = pyglet.media.load("Assets/GolfClubSound.mp3", streaming=False)
 		self.original_radius = radius
 		self.hole = False
+
 	def draw(self,interval,hole):
 		self.is_hole( hole )
-
 		self.displacement.mov(interval)
+
 		self.shape.position = self.displacement.position[0],self.displacement.position[1]
 		self.shape.radius = self.original_radius+self.displacement.position[2]*self.original_radius*0.3
 		self.shape.draw()
 		self.boundaries_col()
+
 	def is_grounded(self):
 		return self.displacement.position[2]<=0
+
 	def is_stopped(self):
 		return self.displacement.speed == vec3d(0,0,0)
+
 	def is_hole(self,hole):
 		if self.displacement.is_collision([self.shape.x-self.shape.radius, self.shape.y-self.shape.radius, self.shape.radius, self.shape.radius],[hole.x-hole.radius, hole.y-hole.radius, hole.radius, hole.radius] ) and self.displacement.position[2]<=0:
 			self.displacement.speed = vec3d(0,0,0)
@@ -37,27 +41,32 @@ class Ball:
 			self.hole = True
 			ScoreSound = pyglet.media.load( "Assets/GolfHoleSound.mp3", streaming=False )
 			ScoreSound.play()
-	#def boundaries_boundaries(self,x,y,width,height) : 
+	#def boundaries_boundaries(self,x,y,width,height) :
+
 	def boundaries_col(self) :
 		for i in golf_course.obstacles :
 			if self.displacement.is_collision([self.shape.x-self.shape.radius, self.shape.y-self.shape.radius, self.shape.radius, self.shape.radius],[i[2], i[3], i[1], i[0]] ):
 				verts = get_verts_from_properties(*i[0:4])
 				intersections = []
-				for i in range(4):
-					intersection = intersect_two_lines_from_points(((self.displacement.position[0],self.displacement.position[1]),(self.displacement.position[0]+self.displacement.speed[0],self.displacement.position[1]+self.displacement.speed[1])),(verts[i%4],verts[(i+1)%4]))
-					distance = math.sqrt(((self.displacement.position[0]-intersection[0])**2)+(self.displacement.position[1]-intersection[1])**2)
-					intersections.append([i,intersection,distance])
-				intersections = sorted(intersections,key=lambda x: x[2])
-				i = intersections[0][0]
-				intersected_edge = (verts[i%4],verts[(i+1)%4])
-				print(intersected_edge)
-				self.rebound()
 
-				continue 
+
+				for u in range(4):
+					intersection = intersect_two_lines_from_points(((self.displacement.position[0],self.displacement.position[1]),(self.displacement.position[0]+self.displacement.speed[0],self.displacement.position[1]+self.displacement.speed[1])),(verts[u%4],verts[(u+1)%4]))
+					distance = math.sqrt(((self.displacement.position[0]-intersection[0])**2)+(self.displacement.position[1]-intersection[1])**2)
+					intersections.append([u,intersection,distance])
+				intersections = sorted(intersections,key=lambda x: x[2])
+				u = intersections[0][0]
+				intersected_edge = (verts[u%4],verts[(u+1)%4])
+				center = (i[2]+i[1]/2,i[3]+i[0]/2)
+				normal = vec2d((intersected_edge[0][0]+intersected_edge[1][0])/2-center[0],(intersected_edge[0][1]+intersected_edge[1][1])/2-center[1])
+				self.rebound(normal)
+				break
 	def rebound(self,normal) :
-		acceleration_vector = vec3d( (golf_course.x_dist)+(30) * 10,
-			                          (golf_course.y_dist)+(30) * 10, 0 )
-		golf_course.ball.displacement.strike( acceleration_vector, 1 / 10 )
+		speed_2d = vec2d(self.displacement.speed[0],self.displacement.speed[1])
+		speed_2d.rotate(2*speed_2d.angle(normal))
+		speed_2d*=-1
+		self.displacement.speed[0],self.displacement.speed[1]=speed_2d[0],speed_2d[1]
+		self.displacement.speed[2]=-self.displacement.speed[-1]
 class GolfCourse:
 
 	def __init__(self,hole_position,ball_position):
@@ -151,5 +160,5 @@ def on_mouse_release(x, y, button, modifiers):
 	#here the mooving function
 @window.event()
 def on_mouse_press(x, y, button, modifiers):
-	print(x,y)
+	pass
 pyglet.app.run() 
