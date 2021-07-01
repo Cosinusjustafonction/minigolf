@@ -9,6 +9,8 @@ class MenuWindow(pyglet.window.Window):
 		self.alive = 1
 		self.is_pressed=False
 		self.pressed_keys = {}
+		background_image = pyglet.image.load("Assets/background.png")
+		self.golf_sprite = pyglet.sprite.Sprite(background_image,0,0,batch=self.foreground)
 	def on_close(self):
 		self.alive=0
 	def on_draw(self):
