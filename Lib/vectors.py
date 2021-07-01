@@ -69,14 +69,21 @@ class vec2d:
 		self.x = x
 		self.y = y
 	def angle(self,other):
-		return math.acos((self.dot_product(other))/(self.magnitude()*other.magnitude()))
+		cosine = (self.dot_product(other))/(self.magnitude()*other.magnitude())
+		sine = (self.determinant(other)/(self.magnitude()*other.magnitude()))
+		if (sine>0 and cosine>0) or (cosine<0 and sine>0):
+			return math.acos(cosine)
+		elif (sine<0 and cosine<0) or (sine<0 and cosine>0):
+			return -math.acos(cosine)
 	def magnitude(self):
 		return math.sqrt((self.x**2)+(self.y**2))
 	def dot_product(self,other):
 		return (self.x*other.x)+(self.y*other.y)
 	def rotate(self,angle):
 		self.x,self.y = math.cos(angle)*self.x-math.sin(angle)*self.y,math.sin(angle)*self.x+math.cos(angle)*self.y
-		return self.__iter__()
+		return None
+	def determinant(self,other):
+		return (self.x*other.y)-(other.x*self.y)
 	def __add__(self, other):
 		return vec2d(self.x+other.x,self.y+other.y)
 	def __sub__(self, other):

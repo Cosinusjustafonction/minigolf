@@ -16,14 +16,18 @@ class Ball:
 		self.audio = pyglet.media.load("Assets/GolfClubSound.mp3", streaming=False)
 		self.original_radius = radius
 		self.hole = False
+		self.direction = pyglet.shapes.Line(self.displacement.position[0],self.displacement.position[1],self.displacement.position[0]+self.displacement.speed[0],self.displacement.position[1]+self.displacement.speed[1])
 
 	def draw(self,interval,hole):
 		self.is_hole( hole )
 		self.displacement.mov(interval)
-
+		self.direction = pyglet.shapes.Line( self.displacement.position[0], self.displacement.position[1],
+		                                     self.displacement.position[0] + self.displacement.speed[0],
+		                                     self.displacement.position[1] + self.displacement.speed[1] )
 		self.shape.position = self.displacement.position[0],self.displacement.position[1]
 		self.shape.radius = self.original_radius+self.displacement.position[2]*self.original_radius*0.3
 		self.shape.draw()
+		self.direction.draw()
 		self.boundaries_col(interval)
 
 	def is_grounded(self):
