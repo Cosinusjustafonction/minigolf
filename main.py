@@ -59,7 +59,7 @@ class Ball:
 				intersected_edge = (verts[u%4],verts[(u+1)%4])
 				center = (i[2]+i[1]/2,i[3]+i[0]/2)
 				normal = vec2d((intersected_edge[0][0]+intersected_edge[1][0])/2-center[0],(intersected_edge[0][1]+intersected_edge[1][1])/2-center[1])
-				self.rebound(normal)
+				self.rebound(-normal)
 				break
 	def rebound(self,normal) :
 		speed_2d = vec2d(self.displacement.speed[0],self.displacement.speed[1])
