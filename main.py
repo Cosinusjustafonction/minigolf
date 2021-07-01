@@ -70,7 +70,7 @@ class Ball:
 		speed_2d = vec2d(self.displacement.speed[0],self.displacement.speed[1])
 		speed_2d.rotate(2*speed_2d.angle(normal))
 		speed_2d*=-1
-		self.displacement.speed[0],self.displacement.speed[1]=speed_2d[0],speed_2d[1]
+		self.displacement.speed[0],self.displacement.speed[1]=0.6*speed_2d[0],0.6*speed_2d[1]
 class GolfCourse:
 
 	def __init__(self,hole_position,ball_position):
@@ -90,8 +90,8 @@ class GolfCourse:
 
 	def strike(self):
 		if self.ball.is_grounded() and self.ball.is_stopped():
-			acceleration_vector = vec3d( -(self.x_dist) * 10,
-			                             -(self.y_dist) * 10, 100 )
+			acceleration_vector = vec3d( -(self.x_dist) * 100,
+			                             -(self.y_dist) * 100, 100 )
 			self.ball.displacement.strike( acceleration_vector, 1 / 10 )
 			self.ball.audio.play()
 			self.arrow.delete()
