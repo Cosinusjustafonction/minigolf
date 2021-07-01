@@ -46,7 +46,6 @@ class Ball:
 			self.hole = True
 			ScoreSound = pyglet.media.load( "Assets/GolfHoleSound.mp3", streaming=False )
 			ScoreSound.play()
-			ScoreSound.delete()
 	#def boundaries_boundaries(self,x,y,width,height) :
 
 	def boundaries_col(self,interval) :
