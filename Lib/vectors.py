@@ -24,6 +24,8 @@ class vec3d:
 		return vec3d(self.x-other.x,self.y-other.y,self.z-other.z)
 	def __iter__(self):
 		return iter([self.x,self.y,self.z])
+	def __rmul__(self, other):
+		return self.__mul__(other)
 	def __mul__(self, other):
 		if isinstance(other,(int,float)):
 			return vec3d( self.x * other, self.y * other, self.z * other )
