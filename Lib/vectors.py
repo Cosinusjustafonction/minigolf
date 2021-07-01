@@ -5,6 +5,8 @@ class vec3d:
 		self.x = x
 		self.y = y
 		self.z = z
+	def magnitude(self):
+		return math.sqrt((self.x**2)+(self.y**2)+(self.z**2))
 	def __setitem__(self, key, value):
 		if not isinstance(key,int):
 			raise KeyError

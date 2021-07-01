@@ -17,7 +17,8 @@ class Ball:
 		self.original_radius = radius
 		self.hole = False
 		self.direction = pyglet.shapes.Line(self.displacement.position[0],self.displacement.position[1],self.displacement.position[0]+self.displacement.speed[0],self.displacement.position[1]+self.displacement.speed[1])
-
+		self.WoodBounce = pyglet.media.load("Assets/GolfWoodBounce.wav",streaming=False)
+		self.Player = pyglet.media.player.Player()
 	def draw(self,interval,hole):
 		self.is_hole( hole )
 		self.displacement.mov(interval)
@@ -45,6 +46,7 @@ class Ball:
 			self.hole = True
 			ScoreSound = pyglet.media.load( "Assets/GolfHoleSound.mp3", streaming=False )
 			ScoreSound.play()
+			ScoreSound.delete()
 	#def boundaries_boundaries(self,x,y,width,height) :
 
 	def boundaries_col(self,interval) :
@@ -66,6 +68,9 @@ class Ball:
 				self.rebound(normal,interval)
 				break
 	def rebound(self,normal,interval) :
+		self.Player.volume = self.displacement.speed.magnitude()/60
+		self.Player.queue(self.WoodBounce)
+		self.Player.play()
 		self.displacement.position-=self.displacement.speed*interval
 		speed_2d = vec2d(self.displacement.speed[0],self.displacement.speed[1])
 		speed_2d.rotate(2*speed_2d.angle(normal))
@@ -90,8 +95,8 @@ class GolfCourse:
 
 	def strike(self):
 		if self.ball.is_grounded() and self.ball.is_stopped():
-			acceleration_vector = vec3d( -(self.x_dist) * 100,
-			                             -(self.y_dist) * 100, 100 )
+			acceleration_vector = vec3d( -(self.x_dist) * 40,
+			                             -(self.y_dist) * 40, 100 )
 			self.ball.displacement.strike( acceleration_vector, 1 / 10 )
 			self.ball.audio.play()
 			self.arrow.delete()

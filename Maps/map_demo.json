@@ -1,0 +1,7 @@
+{
+  "ball_initial_position": [10,20],
+  "hole_position": [30,40],
+  "obstacles": [
+    [x,y,width,height]
+  ]
+}
