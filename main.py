@@ -24,7 +24,7 @@ class Ball:
 		self.shape.position = self.displacement.position[0],self.displacement.position[1]
 		self.shape.radius = self.original_radius+self.displacement.position[2]*self.original_radius*0.3
 		self.shape.draw()
-		self.boundaries_col()
+		self.boundaries_col(interval)
 
 	def is_grounded(self):
 		return self.displacement.position[2]<=0
@@ -43,7 +43,7 @@ class Ball:
 			ScoreSound.play()
 	#def boundaries_boundaries(self,x,y,width,height) :
 
-	def boundaries_col(self) :
+	def boundaries_col(self,interval) :
 		for i in golf_course.obstacles :
 			if self.displacement.is_collision([self.shape.x-self.shape.radius, self.shape.y-self.shape.radius, self.shape.radius, self.shape.radius],[i[2], i[3], i[1], i[0]] ):
 				verts = get_verts_from_properties(*i[0:4])
@@ -59,9 +59,10 @@ class Ball:
 				intersected_edge = (verts[u%4],verts[(u+1)%4])
 				center = (i[2]+i[1]/2,i[3]+i[0]/2)
 				normal = vec2d((intersected_edge[0][0]+intersected_edge[1][0])/2-center[0],(intersected_edge[0][1]+intersected_edge[1][1])/2-center[1])
-				self.rebound(-normal)
+				self.rebound(normal,interval)
 				break
-	def rebound(self,normal) :
+	def rebound(self,normal,interval) :
+		self.displacement.position-=self.displacement.speed*interval
 		speed_2d = vec2d(self.displacement.speed[0],self.displacement.speed[1])
 		speed_2d.rotate(2*speed_2d.angle(normal))
 		speed_2d*=-1
@@ -131,7 +132,7 @@ class GolfCourse:
 			                           anchor_x='center', anchor_y='center',
 			                           color=(217, 252, 18,255))
 			label.draw()
-	def all_obstacles(self) : 
+	def all_obstacles(self) :
 		self.get_bareer(480,10,0,0,(119, 52, 0))
 		self.get_bareer(10,960,0,470,(119, 52, 0))
 		self.get_bareer(480,10,950,0,(119, 52, 0))
@@ -160,4 +161,4 @@ def on_mouse_release(x, y, button, modifiers):
 @window.event()
 def on_mouse_press(x, y, button, modifiers):
 	pass
-pyglet.app.run() 
+pyglet.app.run()  
