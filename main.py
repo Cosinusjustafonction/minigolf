@@ -46,13 +46,13 @@ class Ball:
 
 	def boundaries_col(self,interval) :
 		for i in golf_course.obstacles :
-			if self.displacement.is_collision([self.shape.x-self.shape.radius, self.shape.y-self.shape.radius, self.shape.radius, self.shape.radius],[i[2], i[3], i[1], i[0]] ):
+			if self.displacement.is_collision([self.shape.x-self.shape.radius, self.shape.y-self.shape.radius,2* self.shape.radius, 2*self.shape.radius],[i[2], i[3], i[1], i[0]] ):
 				verts = get_verts_from_properties(*i[0:4])
 				intersections = []
-
-
 				for u in range(4):
 					intersection = intersect_two_lines_from_points(((self.displacement.position[0],self.displacement.position[1]),(self.displacement.position[0]+self.displacement.speed[0],self.displacement.position[1]+self.displacement.speed[1])),(verts[u%4],verts[(u+1)%4]))
+					if intersection is None:
+						continue
 					distance = math.sqrt(((self.displacement.position[0]-intersection[0])**2)+(self.displacement.position[1]-intersection[1])**2)
 					intersections.append([u,intersection,distance])
 				intersections = sorted(intersections,key=lambda x: x[2])
@@ -95,8 +95,8 @@ class GolfCourse:
 
 	def strike(self):
 		if self.ball.is_grounded() and self.ball.is_stopped():
-			acceleration_vector = vec3d( -(self.x_dist) * 100,
-			                             -(self.y_dist) * 100, 0)
+			acceleration_vector = vec3d( -(self.x_dist) * 10,
+			                             -(self.y_dist) * 10, 100)
 			self.ball.displacement.strike( acceleration_vector, 1 / 10 )
 			self.ball.audio.play()
 			self.arrow.delete()

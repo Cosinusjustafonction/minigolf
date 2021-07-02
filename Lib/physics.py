@@ -5,12 +5,18 @@ class Displacement:
 		#setting some physical properties
 		self.position = position
 		self.speed = speed
+		self.old_position = position
 		self.acceleration = acceleration
 		self.coefficient_of_friction = 0.985
 		self.mass = 0
+	def has_landed(self, callback=lambda : print("The eagle has landed")):
+		if self.old_position[2]>self.position[2] and self.position[2]==0:
+			callback()
 	def mov(self, interval):
+		self.has_landed()
 		#This is the basis of physics in this whole game, and it simply updates the speed and position depending on acceleration
 		#And it has some basic ground level collision to ensure that the object doesn't sink in the ground
+		self.old_position = self.position
 		self.speed+=self.acceleration*interval
 		self.position+=self.speed*interval
 		if self.position[2]<=0:
