@@ -16,20 +16,16 @@ class Ball:
 		self.audio = pyglet.media.load("Assets/GolfClubSound.mp3", streaming=False)
 		self.original_radius = radius
 		self.hole = False
-		self.direction = pyglet.shapes.Line(self.displacement.position[0],self.displacement.position[1],self.displacement.position[0]+self.displacement.speed[0],self.displacement.position[1]+self.displacement.speed[1])
 		self.WoodBounce = pyglet.media.load("Assets/GolfWoodBounce.wav",streaming=False)
 		self.Player = pyglet.media.player.Player()
 	def draw(self,interval,hole):
 		self.is_hole( hole )
+		self.boundaries_col( interval )
 		self.displacement.mov(interval)
-		self.direction = pyglet.shapes.Line( self.displacement.position[0], self.displacement.position[1],
-		                                     self.displacement.position[0] + self.displacement.speed[0],
-		                                     self.displacement.position[1] + self.displacement.speed[1] )
 		self.shape.position = self.displacement.position[0],self.displacement.position[1]
 		self.shape.radius = self.original_radius+self.displacement.position[2]*self.original_radius*0.3
 		self.shape.draw()
-		self.direction.draw()
-		self.boundaries_col(interval)
+
 
 	def is_grounded(self):
 		return self.displacement.position[2]<=0
@@ -38,7 +34,7 @@ class Ball:
 		return self.displacement.speed == vec3d(0,0,0)
 
 	def is_hole(self,hole):
-		if self.displacement.is_collision([self.shape.x-self.shape.radius, self.shape.y-self.shape.radius, self.shape.radius, self.shape.radius],[hole.x-hole.radius, hole.y-hole.radius, hole.radius, hole.radius] ) and self.displacement.position[2]<=0:
+		if self.displacement.is_collision([self.shape.x-self.shape.radius, self.shape.y-self.shape.radius, 2*self.shape.radius,2* self.shape.radius],[hole.x-hole.radius, hole.y-hole.radius, 2*hole.radius, 2*hole.radius] ) and self.displacement.position[2]<=0:
 			self.displacement.speed = vec3d(0,0,0)
 			self.displacement.position[0]=hole.x
 			self.displacement.position[1]=hole.y
@@ -83,6 +79,11 @@ class GolfCourse:
 		self.ball.displacement.acceleration = vec3d(0,0,-10)
 		self.background = pyglet.graphics.Batch()
 		self.batch = pyglet.graphics.Batch()
+		self.music_player = pyglet.media.Player()
+		self.music_player.loop = True
+		self.music_player.queue(pyglet.media.load("Assets/BackGroundMusic.m4a"))
+		self.music_player.volume = 0.2
+		self.music_player.play()
 		course_image = pyglet.image.load("Assets/GolfCourseTexture.png")
 		self.golf_sprite = pyglet.sprite.Sprite(course_image,0,0,batch=self.background)
 		self.golf_sprite.scale = max(window.width,window.height)/min(self.golf_sprite.height,self.golf_sprite.width)
@@ -94,8 +95,8 @@ class GolfCourse:
 
 	def strike(self):
 		if self.ball.is_grounded() and self.ball.is_stopped():
-			acceleration_vector = vec3d( -(self.x_dist) * 40,
-			                             -(self.y_dist) * 40, 100 )
+			acceleration_vector = vec3d( -(self.x_dist) * 100,
+			                             -(self.y_dist) * 100, 0)
 			self.ball.displacement.strike( acceleration_vector, 1 / 10 )
 			self.ball.audio.play()
 			self.arrow.delete()
@@ -140,6 +141,7 @@ class GolfCourse:
 			                           anchor_x='center', anchor_y='center',
 			                           color=(217, 252, 18,255))
 			label.draw()
+			self.music_player.pause()
 	def all_obstacles(self) :
 		self.get_bareer(480,10,0,0,(119, 52, 0))
 		self.get_bareer(10,960,0,470,(119, 52, 0))

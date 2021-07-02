@@ -6,7 +6,7 @@ class Displacement:
 		self.position = position
 		self.speed = speed
 		self.acceleration = acceleration
-		self.coefficient_of_friction = 0.97
+		self.coefficient_of_friction = 0.985
 		self.mass = 0
 	def mov(self, interval):
 		#This is the basis of physics in this whole game, and it simply updates the speed and position depending on acceleration
@@ -25,9 +25,9 @@ class Displacement:
 
 		return intersect_two_rectangles(*bounding_box,*other)
 	def friction(self):
-		if abs(self.speed[0])<0.1:
+		if abs(self.speed[0])<1:
 			self.speed[0]=0
-		if abs(self.speed[1])<0.1:
+		if abs(self.speed[1])<1:
 			self.speed[1]=0
 		self.speed*=self.coefficient_of_friction
 
