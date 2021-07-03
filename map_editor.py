@@ -6,7 +6,7 @@ window = pyglet.window.Window(resizable=False,height=480,width=960)
 pyglet.font.add_directory("Assets")
 
 main_list = []
-class GolfCourse:
+class GolfCourseEditor:
 
 	def __init__(self,hole_position,ball_position):
 		self.background = pyglet.graphics.Batch()
@@ -16,9 +16,11 @@ class GolfCourse:
 		self.golf_sprite.scale = max(window.width,window.height)/min(self.golf_sprite.height,self.golf_sprite.width)
 		self.radius = 0.01*max(window.height,window.width)
 		self.obstacles = []
-
+		self.selected_obstacle = pyglet.shapes.Rectangle(0,0,0,0,color=(200,30,20))
+		self.selected_obstacle.opacity = 150
 
 	def draw(self,interval):
+
 		x = 0 
 		y=0
 		self.background.draw()
@@ -32,12 +34,16 @@ class GolfCourse:
 			pyglet.shapes.Rectangle(width=window.width,height=1,x=0,y=y, color=(119, 52, 0),
                                               batch=self.batch ).draw()
 			y += 10
+		self.selected_obstacle.draw()
 		self.batch.draw()
+	def CancelPreview(self):
+		self.selected_obstacle = pyglet.shapes.Rectangle( 0, 0, 0, 0, color=(200, 30, 20) )
+		self.selected_obstacle.opacity = 150
 	def init_obstacles(self,width,height,x,y,color) : 
 		
 		return pyglet.shapes.Rectangle(width=width,height=height,x=x,y=y, color=color,
                                               batch=self.batch )
-golf_course = GolfCourse((50,60),(200,150))
+golf_course = GolfCourseEditor((50,60),(200,150))
 pyglet.clock.schedule_interval(lambda x: x,1/60)
 @window.event()
 def on_draw():
@@ -47,11 +53,20 @@ def on_draw():
 def on_mouse_press(x,y,button, modifiers) : 
 	if button == pyglet.window.mouse.RIGHT :
 		golf_course.obstacles.pop(-1)
-
 	main_list.append((x,y))
-
-@window.event() 
-def on_mouse_release(x,y,button, modifiers) : 
+@window.event()
+def on_mouse_drag(x,y,dx,dy,buttons,modifiers):
+	global main_list
+	if buttons==pyglet.window.mouse.LEFT:
+		if len(main_list)==0:
+			return
+		golf_course.selected_obstacle.x = main_list[0][0]
+		golf_course.selected_obstacle.y = main_list[0][1]
+		golf_course.selected_obstacle.width = x-main_list[0][0]
+		golf_course.selected_obstacle.height = y-main_list[0][1]
+@window.event()
+def on_mouse_release(x,y,button, modifiers) :
+	golf_course.CancelPreview()
 	global main_list
 	main_list.append((x, y))
 	golf_course.obstacles.append(get_rect_shit(main_list))
