@@ -73,9 +73,9 @@ class vec2d:
 	def angle(self,other):
 		cosine = (self.dot_product(other))/(self.magnitude()*other.magnitude())
 		sine = (self.determinant(other)/(self.magnitude()*other.magnitude()))
-		if (sine>0 and cosine>0) or (cosine<0 and sine>0):
+		if (sine>=0 and cosine>=0) or (cosine<=0 and sine>=0):
 			return math.acos(cosine)
-		elif (sine<0 and cosine<0) or (sine<0 and cosine>0):
+		elif (sine<=0 and cosine<=0) or (sine<=0 and cosine>=0):
 			return -math.acos(cosine)
 	def magnitude(self):
 		return math.sqrt((self.x**2)+(self.y**2))
@@ -115,6 +115,8 @@ class vec2d:
 		return self.x==other.x and self.y==other.y
 	def __str__(self):
 		return f"({self.x},{self.y})"
+	def __repr__(self):
+		return self.__str__()
 	def __idiv__(self, other):
 		return vec2d( self.x / other.x, self.y / other.y )
 	def __ne__(self, other):
