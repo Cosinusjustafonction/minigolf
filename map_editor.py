@@ -6,11 +6,9 @@ window = pyglet.window.Window(resizable=False,height=480,width=960)
 pyglet.font.add_directory("Assets")
 white = [255]*4
 main_list = []
-
+i = 0 
 main_coordiantes = []
 polygon_list = []
-is_polygone = False 
-saved = False
 class GolfCourseEditor:
 
 	def __init__(self,hole_position,ball_position):
@@ -23,8 +21,10 @@ class GolfCourseEditor:
 		self.obstacles = []
 		self.selected_obstacle = pyglet.shapes.Rectangle(0,0,0,0,color=(200,30,20))
 		self.selected_obstacle.opacity = 150
+		self.is_polygone = False 	
+		self.saved = False
 	def draw(self,interval):
-		print(is_polygone)
+		print(self.is_polygone)
 		x = 0 
 		y=0
 		self.background.draw()
@@ -40,7 +40,7 @@ class GolfCourseEditor:
 			y += 10
 		self.selected_obstacle.draw()
 		for i in polygon_list : 
-			batch.add(4, pyglet.gl.GL_QUADS, None, ('v2i',i), ('c4B',white*4))
+			self.batch.add(4, pyglet.gl.GL_QUADS, None, ('v2i',i), ('c4B',white*4))
 		self.batch.draw()
 		
 	def CancelPreview(self):
@@ -64,8 +64,9 @@ def on_mouse_press(x,y,button, modifiers) :
 @window.event()
 def on_mouse_drag(x,y,dx,dy,buttons,modifiers):
 	global main_list
+	global main_coordiantes
 	i = 0  
-	if is_polygone == False:
+	if golf_course.is_polygone == False:
 		if buttons==pyglet.window.mouse.LEFT:
 			if len(main_list)==0:
 				return
@@ -73,18 +74,17 @@ def on_mouse_drag(x,y,dx,dy,buttons,modifiers):
 			golf_course.selected_obstacle.y = main_list[0][1]
 			golf_course.selected_obstacle.width = x-main_list[0][0]
 			golf_course.selected_obstacle.height = y-main_list[0][1]
-	if is_polygone == False and saved== False:
-		if i%2 == 0 : 
-			main_coordiantes.append(x) 
-		else : 
-			main_coordiantes.append(y)
+	if golf_course.is_polygone == False and golf_course.saved== False:
+		main_coordiantes.append(y)  
+		main_coordiantes.append(x)
 @window.event()
 def on_mouse_release(x,y,button, modifiers) :
 	golf_course.CancelPreview()
 	global main_list
-	main_list.append((x, y))
-	golf_course.obstacles.append(get_rect_shit(main_list))
-	main_list = []
+	if golf_course.is_polygone == False:
+		main_list.append((x, y))
+		golf_course.obstacles.append(get_rect_shit(main_list))
+		main_list = []
 def get_rect_shit(list_) : 
 	start = list_[0]
 	finish = list_[-1]
@@ -94,12 +94,21 @@ def get_rect_shit(list_) :
 	return width , height , pos 
 @window.event()
 def on_key_press(symbol, modifiers):
+	global main_coordiantes
+	global i 
 	if symbol == 114:
 		golf_course.obstacles = []
 	if symbol == 112 : 
-		print("hello i'm p")
-		is_polygone = True 
-	 
+		if i % 2 == 0 : 
+			golf_course.is_polygone = True
+			i+=1 
+		else : 
+			golf_course.is_polygone = False
+			i+=1			
+	if symbol == 115 : 
+		golf_course.is_polygone = False 
+		polygon_list.append(main_coordiantes)
+		main_coordiantes = []	 
 
  
 
