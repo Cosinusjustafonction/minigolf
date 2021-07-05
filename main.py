@@ -95,8 +95,8 @@ class GolfCourse:
 
 	def strike(self):
 		if self.ball.is_grounded() and self.ball.is_stopped():
-			acceleration_vector = vec3d( -(self.x_dist) * 10,
-			                             -(self.y_dist) * 10, 100)
+			acceleration_vector = vec3d( -(self.x_dist) * 100,
+			                             -(self.y_dist) * 100, 0)
 			self.ball.displacement.strike( acceleration_vector, 1 / 10 )
 			self.ball.audio.play()
 			self.arrow.delete()
