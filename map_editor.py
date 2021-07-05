@@ -87,9 +87,9 @@ def on_mouse_release(x,y,button, modifiers) :
 def get_rect_shit(list_) : 
 	start = list_[0]
 	finish = list_[-1]
-	height = abs(start[0]-finish[0])
-	width = abs(start[1]-finish[1])
-	pos = (start[0] ,finish[1])
+	height = finish[0]-start[0]
+	width = finish[1]-start[1]
+	pos = (start[0] ,start[1])
 	return width , height , pos 
 @window.event()
 def on_key_press(symbol, modifiers):
