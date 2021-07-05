@@ -1,7 +1,8 @@
 {
-  "ball_initial_position": [10,20],
-  "hole_position": [30,40],
+  "ball_initial_position": [200,150],
+  "hole_position": [50,60],
   "obstacles": [
-    [x,y,width,height]
+    [100,100,100,30],
+    [200,300,200,30]
   ]
 }

@@ -21,7 +21,7 @@ class GolfCourseEditor:
 		self.obstacles = []
 		self.selected_obstacle = pyglet.shapes.Rectangle(0,0,0,0,color=(200,30,20))
 		self.selected_obstacle.opacity = 150
-		self.is_polygone = False 	
+		self.is_polygone = False
 		self.saved = False
 		self.batch.add(4, pyglet.gl.GL_QUADS, None, ('v2i',[10,10,10,50,390,10,390,50]), ('c4B',white*4))
 	def draw(self,interval):
