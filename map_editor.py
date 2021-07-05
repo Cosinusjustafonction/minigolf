@@ -1,10 +1,11 @@
 import pyglet
 import random
+from pyglet.gl import * 
 
 
 window = pyglet.window.Window(resizable=False,height=480,width=960)
 pyglet.font.add_directory("Assets")
-white = [255]*4
+white = [255]*3
 main_list = []
 i = 0 
 main_coordiantes = []
@@ -23,11 +24,12 @@ class GolfCourseEditor:
 		self.selected_obstacle.opacity = 150
 		self.is_polygone = False
 		self.saved = False
-		self.batch.add(4, pyglet.gl.GL_QUADS, None, ('v2i',[10,10,10,50,390,10,390,50]), ('c4B',white*4))
+		self.batch.add(3, pyglet.gl.GL_POLYGON, None, ('v2i',[509, 324, 588, 94, 790, 309]), ('c3B',white*3))
+		self.batch.add(3, pyglet.gl.GL_POLYGON, None, ('v2i',[114, 247, 222, 400, 333, 257]), ('c3B',white*3))
 	def draw(self,interval):
 		x = 0 
 		y=0
-		print(polygon_list)
+		
 		self.background.draw()
 		for i in self.obstacles : 
 			self.init_obstacles(i[1],i[0],i[2][0],i[2][1],(119, 52, 0)).draw()
@@ -40,8 +42,11 @@ class GolfCourseEditor:
                                               batch=self.batch ).draw()
 			y += 10
 		self.selected_obstacle.draw()
-		for i in polygon_list : 
-			self.batch.add(int(len(i)/4), pyglet.gl.GL_POLYGON, None, ('v2i',i), ('c4B',white*(int(len(i)/4))))
+		for i in range(len(polygon_list)) : 
+			if len(polygon_list[i]) != 0 :
+				print(polygon_list[i])
+				self.batch.add(3, pyglet.gl.GL_POLYGON, None, ('v2i',polygon_list[i]), ('c3B',white*3))
+				polygon_list.pop(i)
 		self.batch.draw()
 		
 	def CancelPreview(self):
@@ -65,7 +70,7 @@ def on_mouse_press(x,y,button, modifiers) :
 	if button == pyglet.window.mouse.RIGHT :
 		golf_course.obstacles.pop(-1)
 	main_list.append((x,y))
-	if golf_course.is_polygone == False and golf_course.saved== False:
+	if golf_course.is_polygone == True :
 		main_coordiantes.append(x)  
 		main_coordiantes.append(y)
 @window.event()
