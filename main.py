@@ -3,7 +3,7 @@ from Lib.vectors import vec3d,vec2d
 from Lib.physics import *
 import math
 from math import pi,atan2
-
+import json
 
 window = pyglet.window.Window(resizable=False,height=480,width=960)
 pyglet.font.add_directory("Assets")
@@ -73,9 +73,14 @@ class Ball:
 		self.displacement.speed[0],self.displacement.speed[1]=0.6*speed_2d[0],0.6*speed_2d[1]
 class GolfCourse:
 
-	def __init__(self,hole_position,ball_position):
-		self.hole_position = vec2d(hole_position[0],hole_position[1])
-		self.ball = Ball(vec3d(ball_position[0],ball_position[1],0),5)
+	def __init__(self,json_path):
+		f = open(json_path,)
+		self.map_data = json.load(f)
+		f.close()
+		self.hole_position = vec2d(self.map_data["hole_position"][0],self.map_data["hole_position"][1])
+		print(self.hole_position)
+		self.ball = Ball(vec3d(self.map_data["ball_initial_position"][0],self.map_data["ball_initial_position"][1],0),5)
+		print(self.ball.displacement.position)
 		self.ball.displacement.acceleration = vec3d(0,0,-10)
 		self.background = pyglet.graphics.Batch()
 		self.batch = pyglet.graphics.Batch()
@@ -91,6 +96,8 @@ class GolfCourse:
 		self.radius = 0.01*max(window.height,window.width)
 		self.isdraw = False
 		self.obstacles = []
+		for obstacle in self.map_data["obstacles"]:
+			self.obstacles.append([obstacle[3],obstacle[2],obstacle[0],obstacle[1],(119, 52, 0)])
 		self.all_obstacles()
 
 	def strike(self):
@@ -154,7 +161,7 @@ class GolfCourse:
 		return pyglet.shapes.Rectangle(width=width,height=height,x=x,y=y, color=color,
                                               batch=self.batch )
 
-golf_course = GolfCourse((50,60),(200,150))
+golf_course = GolfCourse("Maps/map_demo.json")
 pyglet.clock.schedule_interval(lambda x: x,1/60)
 @window.event()
 def on_draw():

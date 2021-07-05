@@ -21,7 +21,7 @@ class GolfCourseEditor:
 		self.obstacles = []
 		self.selected_obstacle = pyglet.shapes.Rectangle(0,0,0,0,color=(200,30,20))
 		self.selected_obstacle.opacity = 150
-		self.is_polygone = False 	
+		self.is_polygone = False
 		self.saved = False
 	def draw(self,interval):
 		print(self.is_polygone)
