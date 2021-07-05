@@ -1,11 +1,16 @@
 import pyglet
-
+import random
 
 
 window = pyglet.window.Window(resizable=False,height=480,width=960)
 pyglet.font.add_directory("Assets")
-
+white = [255]*4
 main_list = []
+
+main_coordiantes = []
+polygon_list = []
+is_polygone = False 
+saved = False
 class GolfCourseEditor:
 
 	def __init__(self,hole_position,ball_position):
@@ -18,9 +23,8 @@ class GolfCourseEditor:
 		self.obstacles = []
 		self.selected_obstacle = pyglet.shapes.Rectangle(0,0,0,0,color=(200,30,20))
 		self.selected_obstacle.opacity = 150
-
 	def draw(self,interval):
-
+		print(is_polygone)
 		x = 0 
 		y=0
 		self.background.draw()
@@ -35,7 +39,10 @@ class GolfCourseEditor:
                                               batch=self.batch ).draw()
 			y += 10
 		self.selected_obstacle.draw()
+		for i in polygon_list : 
+			batch.add(4, pyglet.gl.GL_QUADS, None, ('v2i',i), ('c4B',white*4))
 		self.batch.draw()
+		
 	def CancelPreview(self):
 		self.selected_obstacle = pyglet.shapes.Rectangle( 0, 0, 0, 0, color=(200, 30, 20) )
 		self.selected_obstacle.opacity = 150
@@ -57,13 +64,20 @@ def on_mouse_press(x,y,button, modifiers) :
 @window.event()
 def on_mouse_drag(x,y,dx,dy,buttons,modifiers):
 	global main_list
-	if buttons==pyglet.window.mouse.LEFT:
-		if len(main_list)==0:
-			return
-		golf_course.selected_obstacle.x = main_list[0][0]
-		golf_course.selected_obstacle.y = main_list[0][1]
-		golf_course.selected_obstacle.width = x-main_list[0][0]
-		golf_course.selected_obstacle.height = y-main_list[0][1]
+	i = 0  
+	if is_polygone == False:
+		if buttons==pyglet.window.mouse.LEFT:
+			if len(main_list)==0:
+				return
+			golf_course.selected_obstacle.x = main_list[0][0]
+			golf_course.selected_obstacle.y = main_list[0][1]
+			golf_course.selected_obstacle.width = x-main_list[0][0]
+			golf_course.selected_obstacle.height = y-main_list[0][1]
+	if is_polygone == False and saved== False:
+		if i%2 == 0 : 
+			main_coordiantes.append(x) 
+		else : 
+			main_coordiantes.append(y)
 @window.event()
 def on_mouse_release(x,y,button, modifiers) :
 	golf_course.CancelPreview()
@@ -78,6 +92,18 @@ def get_rect_shit(list_) :
 	width = abs(start[1]-finish[1])
 	pos = (start[0] ,finish[1])
 	return width , height , pos 
+@window.event()
+def on_key_press(symbol, modifiers):
+	if symbol == 114:
+		golf_course.obstacles = []
+	if symbol == 112 : 
+		print("hello i'm p")
+		is_polygone = True 
+	 
+
+ 
+
+
 
 
 pyglet.app.run()
