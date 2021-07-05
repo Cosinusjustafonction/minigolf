@@ -23,9 +23,11 @@ class GolfCourseEditor:
 		self.selected_obstacle.opacity = 150
 		self.is_polygone = False 	
 		self.saved = False
+		self.batch.add(4, pyglet.gl.GL_QUADS, None, ('v2i',[10,10,10,50,390,10,390,50]), ('c4B',white*4))
 	def draw(self,interval):
 		x = 0 
 		y=0
+		print(polygon_list)
 		self.background.draw()
 		for i in self.obstacles : 
 			self.init_obstacles(i[1],i[0],i[2][0],i[2][1],(119, 52, 0)).draw()
@@ -39,7 +41,7 @@ class GolfCourseEditor:
 			y += 10
 		self.selected_obstacle.draw()
 		for i in polygon_list : 
-			self.batch.add(4, pyglet.gl.GL_QUADS, None, ('v2i',i), ('c4B',white*4))
+			self.batch.add(int(len(i)/4), pyglet.gl.GL_POLYGON, None, ('v2i',i), ('c4B',white*(int(len(i)/4))))
 		self.batch.draw()
 		
 	def CancelPreview(self):
@@ -57,9 +59,15 @@ def on_draw():
 	golf_course.draw(1/60)
 @window.event()
 def on_mouse_press(x,y,button, modifiers) : 
+	print(x, y)
+	global main_list
+	global main_coordiantes
 	if button == pyglet.window.mouse.RIGHT :
 		golf_course.obstacles.pop(-1)
 	main_list.append((x,y))
+	if golf_course.is_polygone == False and golf_course.saved== False:
+		main_coordiantes.append(x)  
+		main_coordiantes.append(y)
 @window.event()
 def on_mouse_drag(x,y,dx,dy,buttons,modifiers):
 	global main_list
@@ -73,9 +81,6 @@ def on_mouse_drag(x,y,dx,dy,buttons,modifiers):
 			golf_course.selected_obstacle.y = main_list[0][1]
 			golf_course.selected_obstacle.width = x-main_list[0][0]
 			golf_course.selected_obstacle.height = y-main_list[0][1]
-	if golf_course.is_polygone == False and golf_course.saved== False:
-		main_coordiantes.append(y)  
-		main_coordiantes.append(x)
 @window.event()
 def on_mouse_release(x,y,button, modifiers) :
 	golf_course.CancelPreview()
