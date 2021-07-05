@@ -24,7 +24,6 @@ class GolfCourseEditor:
 		self.is_polygone = False 	
 		self.saved = False
 	def draw(self,interval):
-		print(self.is_polygone)
 		x = 0 
 		y=0
 		self.background.draw()
