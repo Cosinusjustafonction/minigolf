@@ -97,7 +97,8 @@ def on_key_press(symbol, modifiers):
 	if symbol == 114:
 		golf_course.obstacles = []
 	if symbol == 112 : 
-		 is_polygone = True 
+		print("hello i'm p")
+		is_polygone = True 
 	 
 
  
