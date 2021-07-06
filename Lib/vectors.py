@@ -77,6 +77,8 @@ class vec2d:
 			return math.acos(cosine)
 		elif (sine<=0 and cosine<=0) or (sine<=0 and cosine>=0):
 			return -math.acos(cosine)
+	def orthogonal(self):
+		return vec2d(self.y,-self.x)
 	def magnitude(self):
 		return math.sqrt((self.x**2)+(self.y**2))
 	def dot_product(self,other):
