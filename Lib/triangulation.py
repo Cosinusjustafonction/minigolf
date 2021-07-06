@@ -1,22 +1,20 @@
-import tripy 
 import itertools
-def generate_triangle(coords) : 
+from Lib.vectors import vec2d
+from math import pi
+def earcut(coords) :
+	triangles = []
 	polygon = coords
-	triangles = tripy.earclip(polygon)
-	final = []
-	for i in triangles: 
-		final.append(list(i))
-	return final 
-
-def create_triangle(Lis_) : 
-	main_list = generate_triangle(Lis_)
-	n  = 6
-	final_list = []
-	for i in main_list : 
-		for t in i:
-			for x in t:
-				final_list.append(x)
-	print(final_list)
-	return [final_list[i * n:(i + 1) * n] for i in range((len(final_list) + n - 1) // n )]
-
-print(create_triangle([(0,1), (-1, 0), (0, -1), (1, 0),(5,0)]))
+	i=0
+	while len(polygon)>3:
+		i = i % len( polygon )
+		v = vec2d(polygon[1+i][0]-polygon[0+i][0],polygon[1+i][1]-polygon[0+i][1])
+		u = vec2d( polygon[(len(polygon)-1+i)%len(polygon)][0] - polygon[0+i][0], polygon[(len(polygon)-1+i)%len(polygon)][1] - polygon[0+i][1] )
+		if v.angle(u)<=0:
+			i+=1
+		else:
+			triangles.append([polygon[i+1],polygon[i],polygon[(len(polygon)-1+i)%len(polygon)]])
+			del polygon[i]
+	if len( polygon ) == 3:
+		triangles.append( polygon )
+		return triangles
+print(earcut([(0,0),(10,0),(10,10),(0,10)]))

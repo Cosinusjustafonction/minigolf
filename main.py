@@ -96,7 +96,7 @@ class GolfCourse:
 		self.radius = 0.01*max(window.height,window.width)
 		self.isdraw = False
 		self.obstacles = []
-		for obstacle in self.map_data["obstacles"]:
+		for obstacle in self.map_daSta["obstacles"]:
 			self.obstacles.append([obstacle[3],obstacle[2],obstacle[0],obstacle[1],(119, 52, 0)])
 		self.all_obstacles()
 
