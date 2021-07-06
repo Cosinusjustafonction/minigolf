@@ -1,8 +1,8 @@
 import pyglet
 import random
 from pyglet.gl import * 
-
-
+from Lib.triangulation import *
+import itertools
 window = pyglet.window.Window(resizable=False,height=480,width=960)
 pyglet.font.add_directory("Assets")
 white = [255]*3
@@ -24,12 +24,12 @@ class GolfCourseEditor:
 		self.selected_obstacle.opacity = 150
 		self.is_polygone = False
 		self.saved = False
-		self.batch.add(3, pyglet.gl.GL_POLYGON, None, ('v2i',[509, 324, 588, 94, 790, 309]), ('c3B',white*3))
-		self.batch.add(3, pyglet.gl.GL_POLYGON, None, ('v2i',[114, 247, 222, 400, 333, 257]), ('c3B',white*3))
+		#self.batch.add(3, pyglet.gl.GL_, None, ('v2i',[509, 324, 588, 94, 790, 309]), ('c3B',white*3))
+		#self.batch.add(3, pyglet.gl.GL_POLYGON, None, ('v2i',[114, 247, 222, 400, 333, 257]), ('c3B',white*3))
 	def draw(self,interval):
 		x = 0 
 		y=0
-		
+		self.polygon_obstacle()
 		self.background.draw()
 		for i in self.obstacles : 
 			self.init_obstacles(i[1],i[0],i[2][0],i[2][1],(119, 52, 0)).draw()
@@ -42,11 +42,6 @@ class GolfCourseEditor:
                                               batch=self.batch ).draw()
 			y += 10
 		self.selected_obstacle.draw()
-		for i in range(len(polygon_list)) : 
-			if len(polygon_list[i]) != 0 :
-				print(polygon_list[i])
-				self.batch.add(3, pyglet.gl.GL_POLYGON, None, ('v2i',polygon_list[i]), ('c3B',white*3))
-				polygon_list.pop(i)
 		self.batch.draw()
 		
 	def CancelPreview(self):
@@ -56,6 +51,17 @@ class GolfCourseEditor:
 		
 		return pyglet.shapes.Rectangle(width=width,height=height,x=x,y=y, color=color,
                                               batch=self.batch )
+	def polygon_obstacle(self) :
+		global polygon_list 
+		main_list = polygon_list 
+		cock = 0 
+		for i in polygon_list : 
+			cock = create_triangle(main_list)
+		if cock != 0:
+			for i in cock:
+				self.batch.add(3, pyglet.gl.GL_TRIANGLES, None, ('v2i',i), ('c3B',white*3))
+		print(cock)
+		polygon_list = []
 golf_course = GolfCourseEditor((50,60),(200,150))
 pyglet.clock.schedule_interval(lambda x: x,1/60)
 @window.event()
@@ -69,10 +75,11 @@ def on_mouse_press(x,y,button, modifiers) :
 	global main_coordiantes
 	if button == pyglet.window.mouse.RIGHT :
 		golf_course.obstacles.pop(-1)
-	main_list.append((x,y))
 	if golf_course.is_polygone == True :
-		main_coordiantes.append(x)  
-		main_coordiantes.append(y)
+		main_coordiantes.append((x, y))  
+		
+	else :
+		main_list.append((x,y))
 @window.event()
 def on_mouse_drag(x,y,dx,dy,buttons,modifiers):
 	global main_list
@@ -119,7 +126,24 @@ def on_key_press(symbol, modifiers):
 		polygon_list.append(main_coordiantes)
 		main_coordiantes = []	 
 
- 
+def generate_triangle(coords) : 
+	polygon = coords[0]
+	triangles = tripy.earclip(polygon)
+	final = []
+	for i in triangles: 
+		final.append(list(i))
+	return final 
+
+def create_triangle(Lis_) : 
+	main_list = generate_triangle(Lis_)
+	n  = 6
+	final_list = []
+	for i in main_list : 
+		for t in i:
+			for x in t:
+				final_list.append(x)
+	print(final_list)
+	return [final_list[i * n:(i + 1) * n] for i in range((len(final_list) + n - 1) // n )]
 
 
 
