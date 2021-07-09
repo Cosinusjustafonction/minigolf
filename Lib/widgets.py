@@ -1,18 +1,17 @@
 import pyglet
-class MenuWindow(pyglet.window.Window):
-	def __init__(self,kwargs):
+class MenuWindow:
+	def __init__(self,kwargs,callback):
 		super().__init__(**kwargs)
 		self.batch = pyglet.graphics.Batch()
+		self.background = pyglet.graphics.Batch()
 		self.foreground = pyglet.graphics.Batch()
-		self.button = Button({"x":10,"y":10,"width":100,"height":50,"color":(30,150,20),"batch":self.batch},callback=lambda x,y: print(x,y),foreground=self.foreground)
+		self.button = Button({"x":10,"y":10,"width":100,"height":50,"color":(30,150,20),"batch":self.batch},callback=callback,foreground=self.foreground)
 		self.alive = 1
 		self.is_pressed=False
 		self.pressed_keys = {}
-		background_image = pyglet.image.load("Assets/background.png")
-		self.golf_sprite = pyglet.sprite.Sprite(background_image,0,0,batch=self.foreground)
-	def on_close(self):
-		self.alive=0
-	def on_draw(self):
+		background_image = pyglet.image.load( "Assets/background.png" )
+		self.golf_sprite = pyglet.sprite.Sprite(background_image,0,0,batch=self.background)
+	def draw(self,interval):
 		self.render()
 	def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
 		self.pressed_keys[buttons]=(x,y)
@@ -25,17 +24,13 @@ class MenuWindow(pyglet.window.Window):
 		self.pressed_keys[button]=(x,y)
 		self.is_pressed=True
 	def render(self):
-		self.clear()
 		if 1 in self.pressed_keys:
 			if self.button.x <= self.pressed_keys[1][0] <= self.button.x + self.button.width and self.button.y <= self.pressed_keys[1][1] <= self.button.y + self.button.height and self.is_pressed:
 				self.button.on_hold( self.pressed_keys[1][0], self.pressed_keys[1][1] )
+		self.background.draw()
 		self.batch.draw()
 		self.foreground.draw()
-		self.flip()
-	def run(self):
-		while self.alive:
-			self.render()
-			self.dispatch_events()
+
 class Container(pyglet.shapes.Rectangle):
 	def __init__(self,kwargs,children=[]):
 		super().__init__(self,**kwargs)
@@ -67,5 +62,4 @@ class Button(pyglet.shapes.Rectangle):
 
 
 
-win = MenuWindow({})
-win.run()
+
