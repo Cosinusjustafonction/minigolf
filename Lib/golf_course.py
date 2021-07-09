@@ -10,6 +10,7 @@ class GolfCourse:
 
 	def __init__(self, json_path, window):
 		f = open( json_path, )
+		self.window = window
 		self.map_data = json.load( f )
 		f.close()
 		self.hole_position = vec2d( self.map_data["hole_position"][0], self.map_data["hole_position"][1] )
@@ -84,7 +85,7 @@ class GolfCourse:
 			                           font_name="Big Shoulders Display",
 			                           font_size=50,
 			                           bold=True,
-			                           x=window.width // 2, y=window.height - window.height // 3,
+			                           x=self.window.width // 2, y=self.window.height - self.window.height // 3,
 			                           anchor_x='center', anchor_y='center',
 			                           color=(217, 252, 18, 255) )
 			label.draw()
