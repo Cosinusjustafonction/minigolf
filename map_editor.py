@@ -3,6 +3,7 @@ import random
 from pyglet.gl import * 
 from Lib.triangulation import *
 import itertools
+import tripy
 window = pyglet.window.Window(resizable=False,height=480,width=960)
 pyglet.font.add_directory("Assets")
 white = [255]*3
@@ -125,7 +126,30 @@ def on_key_press(symbol, modifiers):
 		golf_course.is_polygone = False 
 		polygon_list.append(main_coordiantes)
 		main_coordiantes = []	 
+@window.event()
+def on_key_press(symbol,modifiers) : 
+	print(symbol)
+	if symbol == 110 : 
+		window.clear()
 
+def generate_triangle(coords) : 
+	polygon = coords[0]
+	triangles = tripy.earclip(polygon)
+	final = []
+	for i in triangles: 
+		final.append(list(i))
+	return final 
+
+def create_triangle(Lis_) : 
+	main_list = generate_triangle(Lis_)
+	n  = 6
+	final_list = []
+	for i in main_list : 
+		for t in i:
+			for x in t:
+				final_list.append(x)
+	print(final_list)
+	return [final_list[i * n:(i + 1) * n] for i in range((len(final_list) + n - 1) // n )]
 
 
 
