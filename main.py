@@ -185,5 +185,5 @@ class game(pyglet.window.Window):
 
 	def on_mouse_release(self,x, y, button, modifiers):
 		self.currentWindow.on_mouse_release(x,y,button,modifiers)
-window = game({})
+window = game({"width":960,"height":480})
 pyglet.app.run()  
