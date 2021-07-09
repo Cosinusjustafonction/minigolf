@@ -5,11 +5,12 @@ import math
 from math import pi,atan2
 import json
 
-window = pyglet.window.Window(resizable=False,height=480,width=960)
+
 pyglet.font.add_directory("Assets")
 
 class Ball:
-	def __init__(self,position,radius):
+	def __init__(self,position,radius,golf_course):
+		self.golf_course = golf_course
 		self.shape = self.ball = pyglet.shapes.Circle( x=position[0], y=position[1],
 		                                  radius=radius , color=(255, 255, 255))
 		self.displacement = Displacement(position,vec3d(0,0,0),vec3d(0,0,-10))
@@ -45,7 +46,7 @@ class Ball:
 	#def boundaries_boundaries(self,x,y,width,height) :
 
 	def boundaries_col(self,interval) :
-		for i in golf_course.obstacles :
+		for i in self.golf_course.obstacles :
 			if self.displacement.is_collision([self.shape.x-self.shape.radius, self.shape.y-self.shape.radius,2* self.shape.radius, 2*self.shape.radius],[i[2], i[3], i[1], i[0]] ):
 				verts = get_verts_from_properties(*i[0:4])
 				intersections = []
@@ -73,13 +74,13 @@ class Ball:
 		self.displacement.speed[0],self.displacement.speed[1]=0.6*speed_2d[0],0.6*speed_2d[1]
 class GolfCourse:
 
-	def __init__(self,json_path):
+	def __init__(self,json_path,window):
 		f = open(json_path,)
 		self.map_data = json.load(f)
 		f.close()
 		self.hole_position = vec2d(self.map_data["hole_position"][0],self.map_data["hole_position"][1])
 		print(self.hole_position)
-		self.ball = Ball(vec3d(self.map_data["ball_initial_position"][0],self.map_data["ball_initial_position"][1],0),5)
+		self.ball = Ball(vec3d(self.map_data["ball_initial_position"][0],self.map_data["ball_initial_position"][1],0),5,self)
 		print(self.ball.displacement.position)
 		self.ball.displacement.acceleration = vec3d(0,0,-10)
 		self.background = pyglet.graphics.Batch()
@@ -96,7 +97,7 @@ class GolfCourse:
 		self.radius = 0.01*max(window.height,window.width)
 		self.isdraw = False
 		self.obstacles = []
-		for obstacle in self.map_daSta["obstacles"]:
+		for obstacle in self.map_data["obstacles"]:
 			self.obstacles.append([obstacle[3],obstacle[2],obstacle[0],obstacle[1],(119, 52, 0)])
 		self.all_obstacles()
 
@@ -149,6 +150,10 @@ class GolfCourse:
 			                           color=(217, 252, 18,255))
 			label.draw()
 			self.music_player.pause()
+
+	def on_mouse_drag(self,x, y, dx, dy, button, modifiers):
+		main_pos = x, y
+		self.draw_rect( main_pos[0], main_pos[1] )
 	def all_obstacles(self) :
 		self.get_bareer(480,10,0,0,(119, 52, 0))
 		self.get_bareer(10,960,0,470,(119, 52, 0))
@@ -161,21 +166,24 @@ class GolfCourse:
 		return pyglet.shapes.Rectangle(width=width,height=height,x=x,y=y, color=color,
                                               batch=self.batch )
 
-golf_course = GolfCourse("Maps/map_demo.json")
+	def on_mouse_release(self,x, y, button, modifiers):
+		self.strike()
+
+
 pyglet.clock.schedule_interval(lambda x: x,1/60)
-@window.event()
-def on_draw():
-	window.clear()
-	golf_course.draw(1/60)
-@window.event()
-def on_mouse_drag(x,y,dx,dy,button, modifiers) :
-	main_pos = x, y
-	golf_course.draw_rect(main_pos[0],main_pos[1])
-@window.event()
-def on_mouse_release(x, y, button, modifiers):
-	golf_course.strike()
-	#here the mooving function
-@window.event()
-def on_mouse_press(x, y, button, modifiers):
-	pass
+class game(pyglet.window.Window):
+	def __init__(self,kwargs):
+		super(game, self).__init__(**kwargs)
+		self.currentWindow = GolfCourse("Maps/map_demo.json",self)
+		self.alive = 1
+	def on_draw(self):
+		self.clear()
+		self.currentWindow.draw(1/60)
+
+	def on_mouse_drag(self,x, y, dx, dy, button, modifiers):
+		self.currentWindow.on_mouse_drag(x, y, dx, dy, button, modifiers)
+
+	def on_mouse_release(self,x, y, button, modifiers):
+		self.currentWindow.on_mouse_release(x,y,button,modifiers)
+window = game({})
 pyglet.app.run()  
