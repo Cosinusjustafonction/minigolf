@@ -1,11 +1,11 @@
 import pyglet
 class MenuWindow:
-	def __init__(self,kwargs,callback):
+	def __init__(self,kwargs,callback,text_style={"font_name":'Arial', "font_size" : 10, "color" :(255, 255, 255, 255)},texts=["hello world"]):
 		super().__init__(**kwargs)
 		self.batch = pyglet.graphics.Batch()
 		self.background = pyglet.graphics.Batch()
 		self.foreground = pyglet.graphics.Batch()
-		self.button = Button({"x":10,"y":10,"width":100,"height":50,"color":(30,150,20),"batch":self.batch},callback=callback,foreground=self.foreground)
+		self.button = Button({"x":10,"y":10,"width":100,"height":50,"color":(30,150,20),"batch":self.batch},text=texts[0],text_style=text_style,callback=callback,foreground=self.foreground)
 		self.alive = 1
 		self.is_pressed=False
 		self.pressed_keys = {}
@@ -56,10 +56,8 @@ class Button(pyglet.shapes.Rectangle):
 		self.is_held = True
 	def on_release(self,x,y):
 		self.is_held=False
+		if not (self.x<x<self.x+self.width and self.y<y<self.y+self.height):
+			return
 		self.color = (self.color[0]*2,self.color[1]*2,self.color[2]*2)
 		print("you clicked me")
 		self.callback(x,y)
-
-
-
-

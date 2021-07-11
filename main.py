@@ -15,7 +15,7 @@ pyglet.clock.schedule_interval( lambda x: x, 1 / 60 )
 class game( pyglet.window.Window ):
 	def __init__(self, kwargs):
 		super( game, self ).__init__( **kwargs )
-		self.currentWindow = MenuWindow({},callback=lambda x,y: self.start_game())
+		self.currentWindow = MenuWindow({},texts=["Start game"],callback=lambda x,y: self.start_game())
 		self.alive = 1
 	def start_game(self):
 		self.currentWindow = GolfCourse( "Maps/map_demo.json", self )
