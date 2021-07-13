@@ -11,6 +11,9 @@ main_list = []
 i = 0 
 main_coordiantes = []
 polygon_list = []
+final_polygons = []
+polycoords = []
+final_quads = []
 class GolfCourseEditor:
 
 	def __init__(self,hole_position,ball_position):
@@ -78,6 +81,7 @@ def on_mouse_press(x,y,button, modifiers) :
 		golf_course.obstacles.pop(-1)
 	if golf_course.is_polygone == True :
 		main_coordiantes.append((x, y))  
+
 		
 	else :
 		main_list.append((x,y))
@@ -125,13 +129,8 @@ def on_key_press(symbol, modifiers):
 	if symbol == 115 : 
 		golf_course.is_polygone = False 
 		polygon_list.append(main_coordiantes)
+		polycoords.append(main_coordiantes)
 		main_coordiantes = []	 
-@window.event()
-def on_key_press(symbol,modifiers) : 
-	print(symbol)
-	if symbol == 110 : 
-		window.clear()
-
 def generate_triangle(coords) : 
 	polygon = coords[0]
 	triangles = tripy.earclip(polygon)
@@ -148,9 +147,9 @@ def create_triangle(Lis_) :
 		for t in i:
 			for x in t:
 				final_list.append(x)
-	print(final_list)
-	return [final_list[i * n:(i + 1) * n] for i in range((len(final_list) + n - 1) // n )]
-
+	kiki = [final_list[i * n:(i + 1) * n] for i in range((len(final_list) + n - 1) // n )]
+	final_polygons.append(kiki)
+	return kiki
 
 
 
