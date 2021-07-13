@@ -112,7 +112,7 @@ class GolfCourse:
 			for i in u:
 				vertice_tuple+=[i[0],i[1]]
 		vertice_tuple=tuple(vertice_tuple)
-		return self.obstacle_batch.add(len(vertice_tuple)//2,pyglet.gl.GL_TRIANGLES,None,("v2f",vertice_tuple),("c3b",len(vertice_tuple)//2*color))
+		return self.obstacle_batch.add(len(vertice_tuple)//2,pyglet.gl.GL_TRIANGLES,None,("v2f",vertice_tuple),("c3B",len(vertice_tuple)//2*color))
 
 	def on_mouse_release(self, x, y, button, modifiers):
 		self.strike()
