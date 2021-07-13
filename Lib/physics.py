@@ -29,7 +29,7 @@ class Displacement:
 		self.speed+=acceleration*interval
 	def is_collision(self, bounding_box, other):
 
-		return intersect_two_rectangles(*bounding_box,*other)
+		return intersect_rectangle_and_polygon(bounding_box,other)
 	def friction(self):
 		if abs(self.speed[0])<1:
 			self.speed[0]=0
@@ -51,6 +51,33 @@ def intersect_two_lines_from_points(verts1,verts2):
 		return None
 	else:
 		return ((eq1[1]-eq2[1])/(eq2[0]-eq1[0]),(eq1[0]*(eq1[1]-eq2[1])/(eq2[0]-eq1[0]))+eq1[1])
+def intersect_rectangle_and_polygon(rectangle,polygon):
+	for i in range(len(polygon)):
+		p1 = [polygon[i],
+		      polygon[(i+1)%len(polygon)]]
+		for u in range(len(rectangle[0])):
+			p2 = [rectangle[u],
+		      rectangle[(u+1)%len(rectangle)]]
+			intersection = intersect_two_lines_from_points(p1,p2)
+			if intersection is not None and is_between(p1,intersection) and is_between(p2,intersection):
+				return True
+			if intersection is None:
+				epsilon = 0
+				if p1[0][0]-p1[1][0]==0:
+					epsilon=0.1
+				delta = (p1[0][1]-p1[1][1])/(p1[0][0]-p1[1][0]+epsilon)
+				if p1[0][1]-delta*p1[0][0]==p2[0][1]-delta*p2[0][0]:
+					return True
+	return False
+
+def distance(p1,p2):
+	return math.sqrt((p1[0]-p2[0])**2+(p1[1]-p2[1])**2)
+def is_between(segment,point):
+	if math.isclose(distance(segment[0],point)+distance(segment[1],point),distance(segment[0],segment[1])):
+		return True
+	else:
+		return False
+
 def intersect_two_rectangles(x,y,width,height,x1,y1,width1,height1):
 	overlap1 = intersect_two_intervals([x,x+width],[x1,x1+width1])
 	overlap2 = intersect_two_intervals( [y, y + height], [y1, y1 + height1] )

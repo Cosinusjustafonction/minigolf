@@ -33,10 +33,14 @@ class Ball:
 
 	def is_hole(self, hole):
 		if self.displacement.is_collision(
-				[self.shape.x - self.shape.radius, self.shape.y - self.shape.radius, 2 * self.shape.radius,
-				 2 * self.shape.radius],
-				[hole.x - hole.radius, hole.y - hole.radius, 2 * hole.radius, 2 * hole.radius] ) and \
-				self.displacement.position[2] <= 0:
+				[[self.shape.x,self.shape.y],
+				 [self.shape.x+2*self.shape.radius,self.shape.y],
+				 [self.shape.x+2*self.shape.radius,self.shape.y+2*self.shape.radius],
+				 [self.shape.x,self.shape.y+2*self.shape.radius]],[[hole.x,hole.y],
+				 [hole.x+2*hole.radius,hole.y],
+				 [hole.x+2*hole.radius,hole.y+2*hole.radius],
+				 [hole.x,hole.y+2*hole.radius]]):
+
 			self.displacement.speed = vec3d( 0, 0, 0 )
 			self.displacement.position[0] = hole.x
 			self.displacement.position[1] = hole.y
@@ -50,8 +54,7 @@ class Ball:
 	def boundaries_col(self, interval):
 		for i in self.golf_course.obstacles:
 			if self.displacement.is_collision(
-					[self.shape.x - self.shape.radius, self.shape.y - self.shape.radius, 2 * self.shape.radius,
-					 2 * self.shape.radius], [i[2], i[3], i[1], i[0]] ):
+					[[self.shape.x,self.shape.y],[self.shape.x+2*self.shape.radius,self.shape.y],[self.shape.x+2*self.shape.radius,self.shape.y+2*self.shape.radius],[self.shape.x,self.shape.y+2*self.shape.radius]], i[0] ):
 				verts = get_verts_from_properties( *i[0:4] )
 				intersections = []
 				for u in range( 4 ):
