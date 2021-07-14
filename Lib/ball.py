@@ -11,7 +11,11 @@ class Ball:
 		self.golf_course = golf_course
 		self.shape = self.ball = pyglet.shapes.Circle( x=position[0], y=position[1],
 		                                               radius=radius, color=(255, 255, 255) )
+
 		self.displacement = Displacement( position, vec3d( 0, 0, 0 ), vec3d( 0, 0, -10 ) )
+		self.speed_line = pyglet.shapes.Line(self.displacement.position[0],self.displacement.position[1],
+		                                     self.displacement.position[0]+self.displacement.speed[0],
+		                                      self.displacement.position[1]+self.displacement.speed[1],width=5)
 		self.audio = pyglet.media.load( "Assets/GolfClubSound.mp3", streaming=False )
 		self.original_radius = radius
 		self.hole = False
@@ -21,9 +25,14 @@ class Ball:
 	def draw(self, interval, hole):
 		self.is_hole( hole )
 		self.boundaries_col( interval )
+		self.speed_line = pyglet.shapes.Line( self.displacement.position[0], self.displacement.position[1],
+		                                      self.displacement.position[0] + self.displacement.speed[0],
+		                                      self.displacement.position[1] + self.displacement.speed[1], width=2 )
+		self.speed_line.opacity= 100
 		self.displacement.mov( interval )
 		self.shape.position = self.displacement.position[0], self.displacement.position[1]
 		self.shape.radius = self.original_radius + self.displacement.position[2] * self.original_radius * 0.3
+		self.speed_line.draw()
 		self.shape.draw()
 
 
@@ -76,7 +85,7 @@ class Ball:
 					continue
 				intersections = sorted( intersections, key=lambda x: x[2] )
 				u = intersections[0][0]
-				intersected_edge = (verts[u % 4], verts[(u + 1) % 4])
+				intersected_edge = (verts[u % len(verts)], verts[(u + 1) % len(verts)])
 				verts_triangulation = tripy.earclip(verts)
 				triangle = []
 				for tri in verts_triangulation:
