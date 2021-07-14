@@ -15,9 +15,6 @@ class Ball:
 		                                               radius=radius, color=(255, 255, 255) )
 
 		self.displacement = Displacement( position, vec3d( 0, 0, 0 ), vec3d( 0, 0, -10 ) )
-		self.speed_line = pyglet.shapes.Line( self.displacement.position[0], self.displacement.position[1],
-		                                      self.displacement.position[0] + self.displacement.speed[0],
-		                                      self.displacement.position[1] + self.displacement.speed[1], width=5 )
 		self.debug_batch = pyglet.graphics.Batch()
 		self.audio = pyglet.media.load( "Assets/GolfClubSound.mp3", streaming=False )
 		self.original_radius = radius
@@ -28,14 +25,9 @@ class Ball:
 	def draw(self, interval, hole):
 		self.is_hole( hole )
 		self.boundaries_col( interval )
-		self.speed_line = pyglet.shapes.Line( self.displacement.position[0], self.displacement.position[1],
-		                                      self.displacement.position[0] + self.displacement.speed[0],
-		                                      self.displacement.position[1] + self.displacement.speed[1], width=2 )
-		self.speed_line.opacity = 100
 		self.displacement.mov( interval )
 		self.shape.position = self.displacement.position[0], self.displacement.position[1]
 		self.shape.radius = self.original_radius + self.displacement.position[2] * self.original_radius * 0.3
-		self.speed_line.draw()
 		self.debug_batch.draw()
 		self.shape.draw()
 
@@ -46,6 +38,8 @@ class Ball:
 		return self.displacement.speed == vec3d( 0, 0, 0 )
 
 	def is_hole(self, hole):
+		if not self.is_grounded():
+			return
 		if self.displacement.is_collision(
 				[[self.shape.x, self.shape.y],
 				 [self.shape.x + 2 * self.shape.radius, self.shape.y],

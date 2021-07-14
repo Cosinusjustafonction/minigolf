@@ -1,11 +1,12 @@
 import pyglet
 class MenuWindow:
 	def __init__(self,kwargs,callback,text_style={"font_name":'Arial', "font_size" : 10, "color" :(255, 255, 255, 255)},texts=["hello world"]):
-		super().__init__(**kwargs)
+		super().__init__()
 		self.batch = pyglet.graphics.Batch()
 		self.background = pyglet.graphics.Batch()
 		self.foreground = pyglet.graphics.Batch()
-		self.button = Button({"x":10,"y":10,"width":100,"height":50,"color":(30,150,20),"batch":self.batch},text=texts[0],text_style=text_style,callback=callback,foreground=self.foreground)
+		kwargs["batch"]=self.batch
+		self.button = Button(kwargs,text=texts[0],text_style=text_style,callback=callback,foreground=self.foreground)
 		self.alive = 1
 		self.is_pressed=False
 		self.pressed_keys = {}
@@ -44,7 +45,7 @@ class Button(pyglet.shapes.Rectangle):
 		self.document = pyglet.text.document.FormattedDocument(text)
 		self.document.set_style(0,len(self.document.text),text_style)
 		self.text_layout = pyglet.text.layout.TextLayout(document=self.document,wrap_lines=True,width=self.width*0.95,height=self.height*0.9,multiline=True,batch=foreground)
-		self.text_layout.x = self.x+self.width*0.15
+		self.text_layout.x = self.x+self.width*0.3
 		self.text_layout.content_valign = "center"
 		self.text_layout.content_halign = "center"
 		self.text_layout.y = self.y
