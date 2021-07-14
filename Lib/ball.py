@@ -4,6 +4,7 @@ import math
 import pyglet
 from math import pi, atan2
 import json
+import tripy
 
 class Ball:
 	def __init__(self, position, radius, golf_course):
@@ -24,6 +25,7 @@ class Ball:
 		self.shape.position = self.displacement.position[0], self.displacement.position[1]
 		self.shape.radius = self.original_radius + self.displacement.position[2] * self.original_radius * 0.3
 		self.shape.draw()
+
 
 	def is_grounded(self):
 		return self.displacement.position[2] <= 0
@@ -55,25 +57,37 @@ class Ball:
 		for i in self.golf_course.obstacles:
 			if self.displacement.is_collision(
 					[[self.shape.x,self.shape.y],[self.shape.x+2*self.shape.radius,self.shape.y],[self.shape.x+2*self.shape.radius,self.shape.y+2*self.shape.radius],[self.shape.x,self.shape.y+2*self.shape.radius]], i[0] ):
-				verts = get_verts_from_properties( *i[0:4] )
+				verts = i[0]
 				intersections = []
-				for u in range( 4 ):
+				for u in range( len(verts) ):
 					intersection = intersect_two_lines_from_points( ((self.displacement.position[0],
 					                                                  self.displacement.position[1]), (
 					                                                 self.displacement.position[0] +
 					                                                 self.displacement.speed[0],
 					                                                 self.displacement.position[1] +
 					                                                 self.displacement.speed[1])),
-					                                                (verts[u % 4], verts[(u + 1) % 4]) )
+					                                                (verts[u % len(verts)], verts[(u + 1) % len(verts)]) )
 					if intersection is None:
 						continue
 					distance = math.sqrt( ((self.displacement.position[0] - intersection[0]) ** 2) + (
 								self.displacement.position[1] - intersection[1]) ** 2 )
 					intersections.append( [u, intersection, distance] )
+				if len(intersections)<=0:
+					continue
 				intersections = sorted( intersections, key=lambda x: x[2] )
 				u = intersections[0][0]
 				intersected_edge = (verts[u % 4], verts[(u + 1) % 4])
-				center = (i[2] + i[1] / 2, i[3] + i[0] / 2)
+				verts_triangulation = tripy.earclip(verts)
+				triangle = []
+				for tri in verts_triangulation:
+					if tuple(intersected_edge[0]) in tri and tuple(intersected_edge[0]) in tri:
+						triangle = tri
+				median1 = [[(triangle[0][0]+triangle[1][0])/2,(triangle[0][1]+triangle[1][1])/2],
+				           [(triangle[0][0]+triangle[1][0])/2-(triangle[0][1]-triangle[1][1]),(triangle[0][1]+triangle[1][1])/2+(triangle[0][0]-triangle[1][0])]]
+				median2 = [[(triangle[2][0] + triangle[1][0]) / 2, (triangle[2][1] + triangle[1][1]) / 2],
+				           [(triangle[2][0] + triangle[1][0]) / 2 - (triangle[2][1] - triangle[1][1]),
+				            (triangle[2][1] + triangle[1][1]) / 2 + (triangle[2][0] - triangle[1][0])]]
+				center = intersect_two_lines_from_points(median1,median2)
 				normal = vec2d( (intersected_edge[0][0] + intersected_edge[1][0]) / 2 - center[0],
 				                (intersected_edge[0][1] + intersected_edge[1][1]) / 2 - center[1] )
 				self.rebound( normal, interval )

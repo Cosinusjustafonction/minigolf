@@ -9,7 +9,7 @@ from Lib.widgets import MenuWindow
 
 pyglet.font.add_directory( "Assets" )
 
-pyglet.clock.schedule_interval( lambda x: x, 1 / 60 )
+pyglet.clock.schedule_interval( lambda x: x, 1 / 120 )
 
 
 class game( pyglet.window.Window ):
@@ -21,7 +21,7 @@ class game( pyglet.window.Window ):
 		self.currentWindow = GolfCourse( "Maps/map_demo.json", self )
 	def on_draw(self):
 		self.clear()
-		self.currentWindow.draw( 1 / 60 )
+		self.currentWindow.draw( 1 / 120 )
 
 	def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
 		self.currentWindow.on_mouse_drag( x, y, dx, dy, button, modifiers )

@@ -37,20 +37,24 @@ class Displacement:
 			self.speed[1]=0
 		self.speed*=self.coefficient_of_friction
 
-def get_line_equation_from_points(p1,p2):
-	if p1[0]==p2[0]:
-		p1 = (p1[0]+0.01,p1[1])
-	return [(p1[1]-p2[1])/(p1[0]-p2[0]),p1[1]-((p1[1]-p2[1])/(p1[0]-p2[0])*p1[0])]
 def get_normal_from_two_points(p1,p2):
 	return 1,-1/get_line_equation_from_points(p1,p2)[0]
-def intersect_two_lines_from_points(verts1,verts2):
-	eq1 = get_line_equation_from_points(*verts1)
-	eq2 = get_line_equation_from_points(*verts2)
+def get_line_equation_from_points(p1,p2):
+	return [(p2[0]-p1[0]),-(p2[1]-p1[1]),(((p2[1]-p1[1])*p1[0])-(p2[0]-p1[0])*p1[1])]
 
-	if eq1[0]==eq2[0]:
+def cramers_rule(eq1,eq2):
+	delta = determinant([eq1[1],eq1[0]],[eq2[1],eq2[0]])
+	if delta==0:
 		return None
-	else:
-		return ((eq1[1]-eq2[1])/(eq2[0]-eq1[0]),(eq1[0]*(eq1[1]-eq2[1])/(eq2[0]-eq1[0]))+eq1[1])
+	delta_y = determinant([eq1[1],-eq1[2]],[eq2[1],-eq2[2]])
+	delta_x = determinant([-eq1[2],eq1[0]],[-eq2[2],eq2[0]])
+	return (delta_x/delta,delta_y/delta)
+def intersect_two_lines_from_points(l1,l2):
+	eq1 = get_line_equation_from_points(*l1)
+	eq2 = get_line_equation_from_points(*l2)
+	return cramers_rule(eq1,eq2)
+def determinant(p1,p2):
+	return p1[0]*p2[1]-p2[0]*p1[1]
 def intersect_rectangle_and_polygon(rectangle,polygon):
 	for i in range(len(polygon)):
 		p1 = [polygon[i],
@@ -60,14 +64,8 @@ def intersect_rectangle_and_polygon(rectangle,polygon):
 		      rectangle[(u+1)%len(rectangle)]]
 			intersection = intersect_two_lines_from_points(p1,p2)
 			if intersection is not None and is_between(p1,intersection) and is_between(p2,intersection):
+				print(intersection)
 				return True
-			if intersection is None:
-				epsilon = 0
-				if p1[0][0]-p1[1][0]==0:
-					epsilon=0.1
-				delta = (p1[0][1]-p1[1][1])/(p1[0][0]-p1[1][0]+epsilon)
-				if p1[0][1]-delta*p1[0][0]==p2[0][1]-delta*p2[0][0]:
-					return True
 	return False
 
 def distance(p1,p2):
