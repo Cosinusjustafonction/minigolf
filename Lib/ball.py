@@ -6,16 +6,19 @@ from math import pi, atan2
 import json
 import tripy
 
+
 class Ball:
 	def __init__(self, position, radius, golf_course):
 		self.golf_course = golf_course
+		self.centers = []
 		self.shape = self.ball = pyglet.shapes.Circle( x=position[0], y=position[1],
 		                                               radius=radius, color=(255, 255, 255) )
 
 		self.displacement = Displacement( position, vec3d( 0, 0, 0 ), vec3d( 0, 0, -10 ) )
-		self.speed_line = pyglet.shapes.Line(self.displacement.position[0],self.displacement.position[1],
-		                                     self.displacement.position[0]+self.displacement.speed[0],
-		                                      self.displacement.position[1]+self.displacement.speed[1],width=5)
+		self.speed_line = pyglet.shapes.Line( self.displacement.position[0], self.displacement.position[1],
+		                                      self.displacement.position[0] + self.displacement.speed[0],
+		                                      self.displacement.position[1] + self.displacement.speed[1], width=5 )
+		self.debug_batch = pyglet.graphics.Batch()
 		self.audio = pyglet.media.load( "Assets/GolfClubSound.mp3", streaming=False )
 		self.original_radius = radius
 		self.hole = False
@@ -28,13 +31,13 @@ class Ball:
 		self.speed_line = pyglet.shapes.Line( self.displacement.position[0], self.displacement.position[1],
 		                                      self.displacement.position[0] + self.displacement.speed[0],
 		                                      self.displacement.position[1] + self.displacement.speed[1], width=2 )
-		self.speed_line.opacity= 100
+		self.speed_line.opacity = 100
 		self.displacement.mov( interval )
 		self.shape.position = self.displacement.position[0], self.displacement.position[1]
 		self.shape.radius = self.original_radius + self.displacement.position[2] * self.original_radius * 0.3
 		self.speed_line.draw()
+		self.debug_batch.draw()
 		self.shape.draw()
-
 
 	def is_grounded(self):
 		return self.displacement.position[2] <= 0
@@ -44,14 +47,14 @@ class Ball:
 
 	def is_hole(self, hole):
 		if self.displacement.is_collision(
-				[[self.shape.x,self.shape.y],
-				 [self.shape.x+2*self.shape.radius,self.shape.y],
-				 [self.shape.x+2*self.shape.radius,self.shape.y+2*self.shape.radius],
-				 [self.shape.x,self.shape.y+2*self.shape.radius]],[[hole.x,hole.y],
-				 [hole.x+2*hole.radius,hole.y],
-				 [hole.x+2*hole.radius,hole.y+2*hole.radius],
-				 [hole.x,hole.y+2*hole.radius]]):
-
+				[[self.shape.x, self.shape.y],
+				 [self.shape.x + 2 * self.shape.radius, self.shape.y],
+				 [self.shape.x + 2 * self.shape.radius, self.shape.y + 2 * self.shape.radius],
+				 [self.shape.x, self.shape.y + 2 * self.shape.radius]], [[hole.x, hole.y],
+				                                                         [hole.x + 2 * hole.radius, hole.y],
+				                                                         [hole.x + 2 * hole.radius,
+				                                                          hole.y + 2 * hole.radius],
+				                                                         [hole.x, hole.y + 2 * hole.radius]] ):
 			self.displacement.speed = vec3d( 0, 0, 0 )
 			self.displacement.position[0] = hole.x
 			self.displacement.position[1] = hole.y
@@ -60,43 +63,45 @@ class Ball:
 			ScoreSound = pyglet.media.load( "Assets/GolfHoleSound.mp3", streaming=False )
 			ScoreSound.play()
 
-	# def boundaries_boundaries(self,x,y,width,height) :
-
 	def boundaries_col(self, interval):
 		for i in self.golf_course.obstacles:
 			if self.displacement.is_collision(
-					[[self.shape.x,self.shape.y],[self.shape.x+2*self.shape.radius,self.shape.y],[self.shape.x+2*self.shape.radius,self.shape.y+2*self.shape.radius],[self.shape.x,self.shape.y+2*self.shape.radius]], i[0] ):
+					[[self.shape.x, self.shape.y], [self.shape.x + 2 * self.shape.radius, self.shape.y],
+					 [self.shape.x + 2 * self.shape.radius, self.shape.y + 2 * self.shape.radius],
+					 [self.shape.x, self.shape.y + 2 * self.shape.radius]], i[0] ):
 				verts = i[0]
 				intersections = []
-				for u in range( len(verts) ):
+				for u in range( len( verts ) ):
 					intersection = intersect_two_lines_from_points( ((self.displacement.position[0],
 					                                                  self.displacement.position[1]), (
-					                                                 self.displacement.position[0] +
-					                                                 self.displacement.speed[0],
-					                                                 self.displacement.position[1] +
-					                                                 self.displacement.speed[1])),
-					                                                (verts[u % len(verts)], verts[(u + 1) % len(verts)]) )
+						                                                 self.displacement.position[0] +
+						                                                 self.displacement.speed[0],
+						                                                 self.displacement.position[1] +
+						                                                 self.displacement.speed[1])),
+					                                                (verts[u % len( verts )],
+					                                                 verts[(u + 1) % len( verts )]) )
 					if intersection is None:
 						continue
 					distance = math.sqrt( ((self.displacement.position[0] - intersection[0]) ** 2) + (
-								self.displacement.position[1] - intersection[1]) ** 2 )
+							self.displacement.position[1] - intersection[1]) ** 2 )
 					intersections.append( [u, intersection, distance] )
-				if len(intersections)<=0:
+				if len( intersections ) <= 0:
 					continue
 				intersections = sorted( intersections, key=lambda x: x[2] )
 				u = intersections[0][0]
-				intersected_edge = (verts[u % len(verts)], verts[(u + 1) % len(verts)])
-				verts_triangulation = tripy.earclip(verts)
+				intersected_edge = (verts[u % len( verts )], verts[(u + 1) % len( verts )])
+				verts_triangulation = tripy.earclip( verts )
 				triangle = []
 				for tri in verts_triangulation:
-					if tuple(intersected_edge[0]) in tri and tuple(intersected_edge[0]) in tri:
+					if tuple( intersected_edge[0] ) in tri and tuple( intersected_edge[1] ) in tri:
 						triangle = tri
-				median1 = [[(triangle[0][0]+triangle[1][0])/2,(triangle[0][1]+triangle[1][1])/2],
-				           [(triangle[0][0]+triangle[1][0])/2-(triangle[0][1]-triangle[1][1]),(triangle[0][1]+triangle[1][1])/2+(triangle[0][0]-triangle[1][0])]]
+				median1 = [[(triangle[0][0] + triangle[1][0]) / 2, (triangle[0][1] + triangle[1][1]) / 2],
+				           [(triangle[0][0] + triangle[1][0]) / 2 - (triangle[0][1] - triangle[1][1]),
+				            (triangle[0][1] + triangle[1][1]) / 2 + (triangle[0][0] - triangle[1][0])]]
 				median2 = [[(triangle[2][0] + triangle[1][0]) / 2, (triangle[2][1] + triangle[1][1]) / 2],
 				           [(triangle[2][0] + triangle[1][0]) / 2 - (triangle[2][1] - triangle[1][1]),
 				            (triangle[2][1] + triangle[1][1]) / 2 + (triangle[2][0] - triangle[1][0])]]
-				center = intersect_two_lines_from_points(median1,median2)
+				center = intersect_two_lines_from_points( median1, median2 )
 				normal = vec2d( (intersected_edge[0][0] + intersected_edge[1][0]) / 2 - center[0],
 				                (intersected_edge[0][1] + intersected_edge[1][1]) / 2 - center[1] )
 				self.rebound( normal, interval )

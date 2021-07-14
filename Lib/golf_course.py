@@ -6,6 +6,8 @@ from math import pi, atan2
 import json
 from Lib.ball import Ball
 import tripy
+import random
+
 
 class GolfCourse:
 
@@ -16,8 +18,8 @@ class GolfCourse:
 		f.close()
 		self.hole_position = vec2d( self.map_data["hole_position"][0], self.map_data["hole_position"][1] )
 		self.ball = Ball(
-			vec3d( self.map_data["ball_initial_position"][0], self.map_data["ball_initial_position"][1], 0 ), 5, self )
-		self.ball.displacement.acceleration = vec3d( 0, 0, -10 )
+			vec3d( self.map_data["ball_initial_position"][0], self.map_data["ball_initial_position"][1], 5 ), 5, self )
+		self.ball.displacement.acceleration = vec3d( 0, 0, -100 )
 		self.background = pyglet.graphics.Batch()
 		self.batch = pyglet.graphics.Batch()
 		self.music_player = pyglet.media.Player()
