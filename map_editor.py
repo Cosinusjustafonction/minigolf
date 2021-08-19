@@ -5,7 +5,7 @@ from Lib.triangulation import *
 import itertools
 import tripy
 window = pyglet.window.Window(resizable=False,height=480,width=960)
-pyglet.font.add_directory("Assets")
+#pyglet.font.add_directory("Assets")
 white = [255]*3
 main_list = []
 i = 0 
@@ -47,7 +47,7 @@ class GolfCourseEditor:
 			y += 10
 		self.selected_obstacle.draw()
 		self.batch.draw()
-		
+		print(final_quads)
 	def CancelPreview(self):
 		self.selected_obstacle = pyglet.shapes.Rectangle( 0, 0, 0, 0, color=(200, 30, 20) )
 		self.selected_obstacle.opacity = 150
@@ -64,7 +64,6 @@ class GolfCourseEditor:
 		if cock != 0:
 			for i in cock:
 				self.batch.add(3, pyglet.gl.GL_TRIANGLES, None, ('v2i',i), ('c3B',white*3))
-		print(cock)
 		polygon_list = []
 golf_course = GolfCourseEditor((50,60),(200,150))
 pyglet.clock.schedule_interval(lambda x: x,1/60)
@@ -112,6 +111,7 @@ def get_rect_shit(list_) :
 	height = finish[0]-start[0]
 	width = finish[1]-start[1]
 	pos = (start[0] ,start[1])
+	final_quads.append([[start[0],start[1]],[start[0]+height,start[1]],[start[0],start[1]+width],[finish[0],finish[1]]])
 	return width , height , pos 
 @window.event()
 def on_key_press(symbol, modifiers):
@@ -130,6 +130,7 @@ def on_key_press(symbol, modifiers):
 		golf_course.is_polygone = False 
 		polygon_list.append(main_coordiantes)
 		polycoords.append(main_coordiantes)
+		final_quads.append([i== list(i) for i in main_coordiantes])
 		main_coordiantes = []	 
 def generate_triangle(coords) : 
 	polygon = coords[0]
@@ -151,7 +152,8 @@ def create_triangle(Lis_) :
 	final_polygons.append(kiki)
 	return kiki
 
-
+def transform(list) : 
+	print(1)
 
 
 pyglet.app.run()
